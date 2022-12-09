@@ -1,0 +1,25 @@
+{
+  "name": "nlcs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Khangb1913234",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "express-handlebars": "^6.0.6",
+    "jsonwebtoken": "^8.5.1",
+    "method-override": "^3.0.0",
+    "mongoose": "^6.4.4",
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^2.0.19",
+    "xlsx": "^0.18.5"
+  }
+}

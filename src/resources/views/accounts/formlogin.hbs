@@ -1,0 +1,82 @@
+<style>
+  h1{
+    text-align: center;
+    color: orange;
+    margin-bottom: 100px;
+  }
+  .main{
+    width: 400px;
+    margin: auto;
+  }
+  label{
+    font-weight: bold;
+  }
+
+  button{
+    margin-right: 20px;
+  }
+
+</style>
+
+<h1 class="mt-4">Login</h1>
+<div class="main">
+  <div class="form-group">
+    <label for="username">Username</label>
+    <input type="text" class="form-control" id="username" name="username">
+  </div>
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input type="password" class="form-control" id="password" name="password">
+  </div>
+  <button onclick="login()" class="btn btn-primary" id="button">Login</button>
+  New to...? <a href="/register" style="text-decoration: none;">Register</a>
+  <div class="mt-4" id="error"></div>
+</div>
+
+<script>
+    function setCookie(cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        let expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+    }
+    function login(){
+        $.ajax({
+            url: "/account/login",
+            type: "POST",
+            data: {
+              username: $("#username").val(),
+              password: $("#password").val()
+            }
+        })
+        .then(function(data){
+            if(data.token){
+              setCookie("token", data.token, 1)
+              window.location.href = "./"
+            }
+            else{
+              $("p").remove()
+              $("#error").append("<p>Wrong username or password</p>")
+            }
+        })
+        .catch(function(err){
+            $("p").remove()
+            $("#error").append("<p>Wrong username or password</p>")
+        })
+    }
+</script>

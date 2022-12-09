@@ -1,0 +1,554 @@
+<style>
+    a {
+      color: orange !important;
+    }
+    body {
+      margin: 0;
+      font-family: "Lato", sans-serif;
+    }
+
+    .sidebar {
+      margin: 0;
+      padding: 0;
+      width: 200px;
+      background-color: #f1f1f1;
+      position: fixed;
+      height: 100%;
+      overflow: auto;
+    }
+
+    .sidebar a {
+      display: block;
+      color: black;
+      padding: 16px;
+      text-decoration: none;
+    }
+    
+    .sidebar a.active {
+      background-color: #04AA6D;
+      color: white;
+    }
+
+    .sidebar a:hover:not(.active) {
+      background-color: #555;
+      color: white;
+    }
+
+    @media screen and (max-width: 700px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+      .sidebar a {float: left;}
+      div.content {margin-left: 0;}
+    }
+
+    @media screen and (max-width: 400px) {
+      .sidebar a {
+        text-align: center;
+        float: none;
+      }
+    }
+    .card:hover {
+        opacity: 0.8;
+    }
+    ul.ks-cboxtags {
+        list-style: none;
+        padding: 20px;
+    }
+    ul.ks-cboxtags li{
+      display: inline;
+    }
+    ul.ks-cboxtags li label{
+        display: inline-block;
+        background-color: rgba(255, 255, 255, .9);
+        border: 2px solid rgba(139, 139, 139, .3);
+        color: #adadad;
+        border-radius: 25px;
+        white-space: nowrap;
+        margin: 3px 0px;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        transition: all .2s;
+    }
+
+    ul.ks-cboxtags li label {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+
+    ul.ks-cboxtags li label::before {
+        display: inline-block;
+        font-style: normal;
+        font-variant: normal;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        font-size: 12px;
+        padding: 2px 6px 2px 2px;
+        content: "\f067";
+        transition: transform .3s ease-in-out;
+    }
+
+    ul.ks-cboxtags li input[type="checkbox"]:checked + label::before {
+        content: "\f00c";
+        transform: rotate(-360deg);
+        transition: transform .3s ease-in-out;
+    }
+
+    ul.ks-cboxtags li input[type="checkbox"]:checked + label {
+        border: 2px solid #1bdbf8;
+        background-color: #12bbd4;
+        color: #fff;
+        transition: all .2s;
+    }
+
+    ul.ks-cboxtags li input[type="checkbox"] {
+      display: absolute;
+    }
+    ul.ks-cboxtags li input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+    }
+    ul.ks-cboxtags li input[type="checkbox"]:focus + label {
+      border: 2px solid #e9a1ff;
+    }
+    
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-secondary" id="navbar-top">
+  <div class="container">
+    <a class="navbar-brand" href="/">KTravel</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="/destinations">Destination</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/tours">Tour</a>
+        </li>
+        <li class="nav-item ml-4" id="li-search">
+          <form class="form-inline my-2 my-lg-0" id="form-search" method="GET">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" id="input-search"> 
+            <button class="btn btn-success my-2 my-sm-0" type="submit" id="btn-search">Search</button>
+          </form>
+        </li>
+        <li class="nav-item ml-4" id="li-filter">
+          <button class="btn btn-success btn-filter-main" data-toggle="modal" data-target="#filter"><i class="fa fa-filter"></i></button>
+        </li>
+      </ul>
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle username" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{account.username}}</a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item auth" id="item-manage" href="/me/stored/destinations/{{account.username}}">Manage</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="/private" id="prhome" style="display: none">Private Home</a>
+              <a class="dropdown-item" href="/register" id = "reg">Register</a>
+              <a id="auth" class="dropdown-item" href="/login" onclick="check()">Log in</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    
+<div class="modal fade" id="filter" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Filter Destination</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="justify-content-md-center p-2">              
+              <div>
+                  <a href="#pageFilter1" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" style="text-decoration: none;">Select Address: </a>
+                  <div class="collapse list-unstyled" id="pageFilter1">
+                    <select class="form-select mb-3" id="district" aria-label=".form-select-sm" name="district" style="border-radius: 5px" >
+                      <option value="" selected>Select District</option>
+                    </select>                 
+                    <select class="form-select" id="ward" aria-label=".form-select-sm" name="ward" style="border-radius: 5px">
+                        <option value="" selected>Select Ward</option>
+                    </select>
+                  </div>
+              </div>
+              <div class="mt-3">
+                  <a href="#pageFilter2" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" style="text-decoration: none;">Select Type: </a>
+                  <div class="collapse list-unstyled" id="pageFilter2">
+                    <div class="typeDes row" id="typeDes">
+                        <ul class="ks-cboxtags">
+                        {{#each types}}
+                        {{!-- <div class="col-4"><input type="checkbox" value="{{this._id}}" name="types">{{this.name}}</div> --}}                
+                          <li><input class="type-checkbox-template" id="" type="checkbox" value="{{this._id}}" name="types"><label class="type-label-template" for="">{{this.name}}</label></li>              
+                        {{/each}}
+                        </ul>
+                    </div>
+                  </div> 
+              </div>
+              <div class="mt-3"> 
+                  <a href="#pageFilter3" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" style="text-decoration: none;">Select Service: </a>
+                  <div class="collapse list-unstyled" id="pageFilter3">
+                    <div class="serviceDes row">
+                        <ul class="ks-cboxtags">
+                        {{#each services}}
+                        {{!-- <div class="col-4"><input type="checkbox" value="{{this._id}}" name="services">{{this.name}}</div> --}}
+                          <li><input class="service-checkbox-template" id="" type="checkbox" value="{{this._id}}" name="services"><label class="service-label-template" for="">{{this.name}}</label></li>  
+                        {{/each}}
+                        </ul>
+                    </div>  
+                  </div>                
+              </div>
+              <button class="btn btn-success mt-4" id="btn-filter">Filter</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="filter1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" >
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Filter Tour</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="justify-content-md-center p-2">              
+              <div>
+                  <a href="#pageFilterTour1" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" style="text-decoration: none;">Select Destinations: </a>
+                  <div class="collapse list-unstyled" id="pageFilterTour1">
+                    <div class="destinationDes row" id="destinationDes">
+                        <ul class="ks-cboxtags">
+                        {{#each destinations}}
+                        {{!-- <div class="col-4"><input type="checkbox" value="{{this._id}}" name="types">{{this.name}}</div> --}}                
+                          <li><input class="destinationsFilter-checkbox-template" id="" type="checkbox" value="{{this._id}}" name="destinationsFilter"><label class="destinationsFilter-label-template" for="">{{this.name}}</label></li>              
+                        {{/each}}
+                        </ul>
+                    </div>
+                  </div> 
+              </div>
+              <div class="mt-3">
+                  <a href="#pageFilterTour2" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" style="text-decoration: none;">Select Price: </a>
+                  <div class="collapse list-unstyled" id="pageFilterTour2">
+                    <div class="priceDes row" id="priceDes">
+                        <ul class="ks-cboxtags">              
+                          <li><input class="pricesFilter-checkbox-template" id="priceFilter1" type="checkbox" value="1" name="pricesFilter"><label class="pricesFilter-label-template" for="priceFilter1"> &#60;500.000 VND</label></li>              
+                          <li><input class="pricesFilter-checkbox-template" id="priceFilter2" type="checkbox" value="2" name="pricesFilter"><label class="pricesFilter-label-template" for="priceFilter2">500.000 VND - 1.000.000 VND</label></li> 
+                          <li><input class="pricesFilter-checkbox-template" id="priceFilter3" type="checkbox" value="3" name="pricesFilter"><label class="pricesFilter-label-template" for="priceFilter3"> &#62;1.000.000 VND</label></li> 
+                        </ul>
+                    </div>
+                  </div> 
+              </div>
+              <button class="btn btn-success mt-4" id="btn-filter1">Filter</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="acc" style="display:none;">{{account.role}}</div>
+<div class="sidebar" id="sidebar-me-stored">
+  <a href="#pageSubmenu1" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle manage-qtv">Account</a>
+  <ul class="collapse list-unstyled" id="pageSubmenu1">
+    <li><a href="/me/stored/accounts"><span class="fa fa-chevron-right mr-2"></span>Edit</a></li>
+  </ul>
+  <a href="#pageSubmenu2" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle manage-qtv">Approval</a>
+  <ul class="collapse list-unstyled" id="pageSubmenu2">
+    <li><a href="/me/stored/approvals/destinations/{{account.username}}"><span class="fa fa-chevron-right mr-2"></span>Edit (Destination)</a></li>
+    <li><a href="/me/stored/approvals/tours/{{account.username}}"><span class="fa fa-chevron-right mr-2"></span>Edit (Tour)</a></li>
+  </ul>
+  <a href="#pageSubmenu3" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle manage-qtv">Unapproval</a>
+  <ul class="collapse list-unstyled" id="pageSubmenu3">
+    <li><a href="/me/stored/notdestinations"><span class="fa fa-chevron-right mr-2"></span>Approve (Destination)</a></li>
+    <li><a href="/me/stored/nottours"><span class="fa fa-chevron-right mr-2"></span>Approve (Tour)</a></li>
+  </ul>
+  <a href="#pageSubmenu4" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle manage-qtv">Type</a>
+  <ul class="collapse list-unstyled" id="pageSubmenu4">
+    <li><a href="/types/form/add"><span class="fa fa-chevron-right mr-2"></span>Create</a></li>
+    <li><a href="/me/stored/types"><span class="fa fa-chevron-right mr-2"></span>Edit</a></li>
+  </ul>
+  <a href="#pageSubmenu5" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle manage-qtv">Service</a>
+  <ul class="collapse list-unstyled" id="pageSubmenu5">
+    <li><a href="/services/form/add"><span class="fa fa-chevron-right mr-2"></span>Create</a></li>
+    <li><a href="/me/stored/services"><span class="fa fa-chevron-right mr-2"></span>Edit</a></li>
+  </ul>
+  <a href="#pageSubmenu6" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle manage-ctv1" style="display: none;">Destination</a>
+  <ul class="collapse list-unstyled" id="pageSubmenu6">
+    <li><a href="/destinations/form/add"><span class="fa fa-chevron-right mr-2"></span>Create</a></li>
+    <li><a href="/me/stored/destinations/{{account.username}}"><span class="fa fa-chevron-right mr-2"></span>Edit</a></li>
+  </ul>
+  <a href="#pageSubmenu7" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle manage-ctv2" style="display: none;">Tour</a>
+  <ul class="collapse list-unstyled" id="pageSubmenu7">
+    <li><a href="/tours/form/add"><span class="fa fa-chevron-right mr-2"></span>Create</a></li>
+    <li><a href="/me/stored/tours/{{account.username}}"><span class="fa fa-chevron-right mr-2"></span>Edit</a></li>
+  </ul>
+</div>
+
+<form name="filter-form"></form>
+
+<script>
+   //-----------------------------------------Remove filter when add or update---------------------------------------
+    var checkFormAll
+    var queryAll = document.getElementById("filter")
+    var liSearch = document.getElementById("li-search")
+    var liFilter = document.getElementById("li-filter")
+    if(location.href.includes("http://localhost:3000/destinations/form") || location.href.includes("http://localhost:3000/destinations/edit") || location.href.includes("http://localhost:3000/tours/form") || location.href.includes("http://localhost:3000/tours/edit")){
+        while (queryAll.firstChild) {
+            queryAll.removeChild(queryAll.firstChild);
+            checkFormAll = 1
+        }
+        while (liSearch.firstChild)
+            liSearch.removeChild(liSearch.firstChild);
+        while (liFilter.firstChild)
+            liFilter.removeChild(liFilter.firstChild);
+    }
+    //------------------------------------------END remove------------------------------------------------
+    //-------------------------------------------SIDEBAR-----------------------------------------------
+    var acc = document.querySelector(".acc")
+    var auth = document.querySelector(".auth")
+    var link = location.href
+    if(!link.includes("me/stored"))
+        document.getElementById("sidebar-me-stored").style = "display: none;"
+    if(acc.innerHTML == "ctv1"){
+        var manageQTV = document.querySelectorAll(".manage-qtv")
+        var manageCTV1 = document.querySelector(".manage-ctv1")
+        for(var i = 0; i < manageQTV.length; i++)
+            manageQTV[i].setAttribute("style", "display: none;")
+        manageCTV1.removeAttribute("style")
+    }
+    else if(acc.innerHTML == "ctv2"){
+        var manageQTV = document.querySelectorAll(".manage-qtv")
+        var manageCTV2 = document.querySelector(".manage-ctv2")
+        for(var i = 0; i < manageQTV.length; i++)
+            manageQTV[i].setAttribute("style", "display: none;")
+        manageCTV2.removeAttribute("style")
+    }
+    //-----------------------------END SIDEBAR------------------------
+    //-----------------------------COOKIE------------------------------
+    function setCookie(cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        let expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+    }
+    function deleteAllCookies(){
+        var cookies = document.cookie.split("; ");
+        for (var c = 0; c < cookies.length; c++) {
+            var d = window.location.hostname.split(".");
+            while (d.length > 0) {
+                var cookieBase = encodeURIComponent(cookies[c].split(";")[0].split("=")[0]) + '=; expires=Thu, 01-Jan-1970 00:00:01 GMT; domain=' + d.join('.') + ' ;path=';
+                var p = location.pathname.split('/');
+                document.cookie = cookieBase + '/';
+                while (p.length > 0) {
+                    document.cookie = cookieBase + p.join('/');
+                    p.pop();
+                };
+                d.shift();
+            }
+        }
+    }
+
+    if(getCookie("token"))
+        document.getElementById("auth").innerHTML = "Log out"
+    else{
+        document.getElementById("item-manage").style.display = "none"
+        document.getElementById("auth").innerHTML = "Log in"
+    }
+    
+    function check(){
+        if(getCookie("token")){
+            deleteAllCookies()
+        }
+        else{
+            signOut.href = "/login"
+        }
+    }
+  //--------------------------------------END cookie------------------------------------------  
+  //--------------------------------------HEADER---------------------------------------
+    
+    if(acc.innerHTML != "qtv" && acc.innerHTML != "ctv1" && acc.innerHTML != "ctv2")
+        auth.setAttribute("style", "display: none")
+    if(acc.innerHTML == "qtv" || acc.innerHTML == "ctv1" || acc.innerHTML == "ctv2" || acc.innerHTML == "tv"){
+        document.getElementById("reg").style = "display: none"
+        document.getElementById("prhome").style = "display: relative"
+    }
+
+    if(!location.href.includes("http://localhost:3000/destinations") || (location.href.length == 59 && location.href.substr(35).length == 24)){
+        if(!location.href.includes("http://localhost:3000/tours") || (location.href.length == 52 && location.href.substr(28).length == 24)){
+            document.getElementById("li-search").style = "display: none;"
+            document.getElementById("li-filter").style = "display: none;" 
+        }
+    }
+    
+    document.addEventListener("DOMContentLoaded", function(){
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 50) {
+              document.getElementById('navbar-top').classList.add('fixed-top');
+              // add padding top to show content behind navbar
+              navbar_height = document.querySelector('.navbar').offsetHeight;
+              document.body.style.paddingTop = navbar_height + 'px';
+            } else {
+              document.getElementById('navbar-top').classList.remove('fixed-top');
+              // remove padding top from body
+              document.body.style.paddingTop = '0';
+            } 
+        });
+
+        var name = document.querySelector(".username")
+        if(acc.innerHTML == "ctv2")
+            auth.href = "/me/stored/tours/" + name.innerHTML
+        else if(acc.innerHTML == "qtv")
+            auth.href = "/me/stored/accounts"
+
+    //--------------------------------------------Tim kiem va loc--------------------------------------------
+        var keyword
+        var formSearch = document.forms["form-search"]
+        var btnSearch = document.getElementById("btn-search")
+        
+        $("#btn-search").click(function(event){
+            keyword = $("#input-search").val()
+        })
+        btnSearch.onclick = function(){         //!!!!
+            if(keyword.length != 0){
+                formSearch.action = "/destinations/search/" + keyword + "/"
+                formSearch.submit()
+            }
+        }
+        if(!location.href.includes("http://localhost:3000/destinations/form") && (!location.href.includes("http://localhost:3000/destinations/edit"))){
+            $.ajax({
+                url: "/villages/",
+                type: "GET",
+            })
+            .then(function(data){
+                renderDistrict(data)
+            })
+            .catch(function(err){
+                console.log(err)
+            })
+        }
+         
+        var districts = document.getElementById("district")
+        var wards = document.getElementById("ward")
+        var btnFilter = document.getElementById("btn-filter")
+        var btnFilter1 = document.getElementById("btn-filter1")
+        var filterForm = document.forms["filter-form"]
+
+        function renderDistrict(data){
+            for(const x of data){
+                districts.options[districts.options.length] = new Option(x.name, x._id)
+                //districts.value = x._id
+            }
+            districts.onchange = function(){
+                wards.length = 1
+                const dataCity = data.filter((n) => n._id === districts.value)
+                if (this.value != "") {
+                    const dataWards = dataCity.filter(n => n._id === this.value)[0].wards
+
+                    for(const w of dataWards){
+                    wards.options[wards.options.length] = new Option(w.name, w.code)
+                    }
+                }
+            }  
+        }
+        
+        if(checkFormAll != 1){
+            btnFilter.onclick = function(){
+                var districtID = districts.value
+                var wardCode = wards.value
+                var typeID = []
+                var serviceID = []
+                $("input:checkbox[name=types]:checked").each(function(){
+                    typeID.push($(this).val());
+                });
+                $("input:checkbox[name=services]:checked").each(function(){
+                    serviceID.push($(this).val());
+                });
+                typeID = typeID.join("&")
+                serviceID = serviceID.join("&")
+                if(!districtID)
+                    districtID = "0"
+                if(!wardCode)
+                    wardCode = "0"
+                if(!typeID)
+                    typeID = "0"
+                if(!serviceID)
+                    serviceID = "0"
+                filterForm.action = `/destinations/filter/${districtID}/${wardCode}/${typeID}/${serviceID}`
+                filterForm.submit()
+            }
+            btnFilter1.onclick = function(){
+                var destinationID = []
+                var priceID = []
+                $("input:checkbox[name=destinationsFilter]:checked").each(function(){
+                    destinationID.push($(this).val());
+                });
+                $("input:checkbox[name=pricesFilter]:checked").each(function(){
+                    priceID.push($(this).val());
+                });
+                
+                destinationID = destinationID.join("&")
+                priceID = priceID.join("&")
+                if(!destinationID)
+                    destinationID = "0"
+                if(!priceID)
+                    priceID = "0"
+                filterForm.action = `/tours/filter/${destinationID}/${priceID}`
+                filterForm.submit()
+            }
+        }
+
+        //----------------------------------Custom checkbox template------------------------------------------------
+        var typeCheckbox = document.querySelectorAll(".type-checkbox-template")
+        var typeLabel = document.querySelectorAll(".type-label-template")
+        var serviceCheckbox = document.querySelectorAll(".service-checkbox-template")
+        var serviceLabel = document.querySelectorAll(".service-label-template")
+        var destinationCheckbox = document.querySelectorAll(".destinationsFilter-checkbox-template")
+        var destinationLabel = document.querySelectorAll(".destinationsFilter-label-template")
+        for(var i = 0; i < typeCheckbox.length; i++){
+            typeCheckbox[i].setAttribute("id", `type${i+1}`)
+            typeLabel[i].setAttribute("for", `type${i+1}`)
+        }
+        for(var i = 0; i < serviceCheckbox.length; i++){
+            serviceCheckbox[i].setAttribute("id", `service${i+1}`)
+            serviceLabel[i].setAttribute("for", `service${i+1}`)
+        }
+
+        for(var i = 0; i < destinationCheckbox.length; i++){
+            destinationCheckbox[i].setAttribute("id", `destinationfilter${i+1}`)
+            destinationLabel[i].setAttribute("for", `destinationfilter${i+1}`)
+        }
+
+        var btnFilterMain = document.querySelector(".btn-filter-main")
+        if(location.href.includes("http://localhost:3000/tours")){
+            btnFilterMain.setAttribute("data-target", "#filter1")
+        }
+    })
+  
+</script>

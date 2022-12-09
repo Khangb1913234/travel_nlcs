@@ -1,0 +1,122 @@
+<style>
+  h1{
+    text-align: center;
+    color: orange;
+    margin-bottom: 10px;
+  }
+  .main{
+    width: 500px;
+    margin-left: 300px;
+  }
+  label{
+    font-weight: bold;
+  }
+  ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+      color: rgb(197, 179, 179) !important;
+      opacity: 1; /* Firefox */
+  }
+  ::-ms-input-placeholder { /* Microsoft Edge */
+      color: rgb(197, 179, 179) !important;
+  }
+</style>
+
+<h1 class="mt-4">Create Destination</h1>
+<div class="main">
+  <form method="POST" action="/destinations/create">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" class="form-control" id="name" name="name">
+    </div>
+    <div class="form-group">
+      <label for="content">Content</label>
+      <textarea class="form-control" id="content" name="content" rows="5"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="content">Address</label>
+      <input type="text" class="form-control" id="address" name="address" placeholder="Ex: 335 Lộ Vòng Cung, Xã Mỹ Khánh,  Huyện Phong Điền">
+    </div>
+    <div class="row justify-content-md-center p-2">
+      <div class="col-md-auto">
+        <select class="form-select form-select-sm mb-3" id="district" aria-label=".form-select-sm" name="district">
+          <option value="" selected>District</option>
+        </select>
+        <select class="form-select form-select-sm" id="ward" aria-label=".form-select-sm" name="ward">
+          <option value="" selected>Ward</option>
+        </select>
+      </div>    
+    </div>
+    <div class="form-group">
+      <label for="time">Operating Time</label>
+      <input type="text" class="form-control" id="time" name="operatingTime" placeholder="Ex: 7:00-22:00">
+    </div>
+    <div class="form-group">
+      <label for="price">Price</label>
+      <input type="text" class="form-control" id="price" name="price" placeholder="Ex: 100.000 VND">
+    </div>
+    <div class="form-group">
+      <label for="capacity">Capacity</label>
+      <input type="text" class="form-control" id="capacity" name="capacity" placeholder="Ex: 1000 people">
+    </div>
+    <div class="form-group">
+      <label for="contact">Contact</label>
+      <input type="text" class="form-control" id="contact" name="contact" placeholder="Ex: https://www.mykhanh.com/">
+    </div>
+    <p style="font-weight: bold;">Service</p>
+    <div class="serviceDes row">
+        {{#each services}}
+            <div class="col-4"><input type="checkbox" value="{{this._id}}" name="services[]">{{this.name}}</div>
+        {{/each}}
+    </div>
+    <p class="mt-4" style="font-weight: bold;">Type</p>
+    <div class="typeDes row">
+        {{#each types}}
+            <div class="col-4"><input type="checkbox" value="{{this._id}}" name="types[]">{{this.name}}</div>
+        {{/each}}
+    </div>
+    <div class="form-group mt-4">
+      <label for="image">Image</label>
+      <input type="text" class="form-control" id="image" name="image" required>
+    </div>
+    {{!-- <div>
+      <input type="time" name="time">
+    </div> --}}
+    <button type="submit" class="btn btn-primary mb-4">Create</button>
+  </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+  $.ajax({
+                url: "/villages/",
+                type: "GET",
+            })
+            .then(function(data){
+                renderDistrict(data)
+            })
+            .catch(function(err){
+                console.log(err)
+            })
+
+  var districts = document.getElementById("district")
+  var wards = document.getElementById("ward")
+
+  function renderDistrict(data){
+            for(const x of data){
+                districts.options[districts.options.length] = new Option(x.name, x._id)
+                //districts.value = x._id
+            }
+            districts.onchange = function(){
+                wards.length = 1
+                const dataCity = data.filter((n) => n._id === districts.value)
+                if (this.value != "") {
+                    const dataWards = dataCity.filter(n => n._id === this.value)[0].wards
+
+                    for(const w of dataWards){
+                    wards.options[wards.options.length] = new Option(w.name, w.code)
+                    }
+                }
+            }  
+        }
+})
+
+</script>

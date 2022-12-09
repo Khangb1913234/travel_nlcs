@@ -1,0 +1,22 @@
+<style>
+  h1{
+    text-align: center;
+    color: red;
+    margin-bottom: 100px;
+  }
+  .main{
+    width: 500px;
+    margin-left: 300px;
+  }
+</style>
+
+<h1 class="mt-4">Update Type</h1>
+<div class="main">
+  <form method="POST" action="/types/update/{{type._id}}?_method=PUT">
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input type="text" class="form-control" value="{{type.name}}" id="name" name="name">
+  </div>
+  <button type="submit" class="btn btn-primary">Save</button>
+</form>
+</div>

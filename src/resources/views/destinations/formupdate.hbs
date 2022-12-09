@@ -1,0 +1,166 @@
+<style>
+  h1{
+    text-align: center;
+    color: red;
+    margin-bottom: 10px;
+  }
+  .main{
+    width: 500px;
+    margin-left: 300px;
+  }
+  label{
+    font-weight: bold;
+  }
+</style>
+
+<h1 class="mt-4">Update Destination</h1>
+<div class="main">
+  <form method="POST" action="/destinations/update/{{destination._id}}?_method=PUT">
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input type="text" class="form-control" value="{{destination.name}}" id="name" name="name">
+  </div>
+  <div class="form-group">
+    <label for="content">Content</label>
+    <textarea class="form-control" id="content" name="content" rows="5">{{destination.content}}</textarea>
+  </div>
+  <div class="form-group">
+      <label for="content">Address</label>
+      <input type="text" class="form-control" id="address" name="address" value="{{destination.address}}" placeholder="Ex: 335 Lộ Vòng Cung, Xã Mỹ Khánh,  Huyện Phong Điền">
+    </div>
+  <div class="row justify-content-md-center p-2">
+    <div class="col-md-auto">
+      <select class="form-select form-select-sm mb-3" id="district" aria-label=".form-select-sm" name="districtId" required>
+        <option value="" selected>District</option>
+      </select>
+      <select class="form-select form-select-sm" id="ward" aria-label=".form-select-sm" name="wardCode" required>
+        <option value="" selected>Ward</option>
+      </select>
+    </div>    
+  </div>
+  <div class="form-group">
+    <label for="time">Operating Time</label>
+    <input type="text" class="form-control" id="time" name="operatingTime" value="{{destination.operatingTime}}" placeholder="Ex: 7:00-22:00">
+  </div>
+  <div class="form-group">
+    <label for="price">Price</label>
+    <input type="text" class="form-control" id="price" name="price" value = "{{destination.price}}" placeholder="Ex: 100.000 VND">
+  </div>
+  <div class="form-group">
+    <label for="capacity">Capacity</label>
+    <input type="text" class="form-control" id="capacity" name="capacity" value="{{destination.capacity}}" placeholder="Ex: 1000 people">
+  </div>
+  <div class="form-group">
+    <label for="contact">Contact</label>
+    <input type="text" class="form-control" id="contact" name="contact" value="{{destination.contact}}" placeholder="Ex: https://www.mykhanh.com/">
+  </div>
+  <p style="font-weight: bold;">Service</p>
+  <div class="serviceDes row">
+      {{#each services}}
+          <div class="col-4"><input class="serviceDOM"type="checkbox" value="{{this._id}}" name="services[]">{{this.name}}</div>
+      {{/each}}
+  </div>
+  <p class="mt-4" style="font-weight: bold;">Type</p>
+  <div class="typeDes row">
+      {{#each types}}
+          <div class="col-4"><input class="typeDOM" type="checkbox" value="{{this._id}}" name="types[]">{{this.name}}</div>
+      {{/each}}
+  </div>
+  <div class="form-group mt-4">
+    <label for="image">Image</label>
+    <input type="text" class="form-control" value="{{destination.image}}" id="image" name="image" required>
+  </div>
+
+  <button type="submit" class="btn btn-primary mb-4">Save</button>
+</form>
+</div>
+
+<div class="districtID" style="display: none;">{{destination.districtId}}</div>
+<div class="wardcode" style="display: none;">{{destination.wardCode}}</div>
+<div class="typeID" style="display: none;">{{destination.types}}</div>
+<div class="serviceID" style="display: none;">{{destination.services}}</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+      //---------------------------------Show select quan huyen--------------------------------
+        $.ajax({
+          url: "/villages/",
+          type: "GET",
+        })
+        .then(function(data){
+            renderDistrict(data)
+                                  
+        })
+        .catch(function(err){
+            console.log(err)
+        })
+
+        var districts = document.getElementById("district")
+        var wards = document.getElementById("ward")
+
+        function renderDistrict(data){
+            for(const x of data){
+                districts.options[districts.options.length] = new Option(x.name, x._id)
+            }
+            //---------------------Xu li render ra DUNG quan huyen phuong xa(tu dong cap nhat option)--------------------------
+            var s = document.querySelector(".districtID").innerHTML           
+            for(var i = 0; i < districts.options.length; i++){
+                if(districts.options[i].value == s){
+                    districts.options[0].selected = false
+                    districts.options[i].selected = true
+                    break
+                }
+            }    
+            if(districts.options[0].selected == false){
+                wards.length = 1
+                const dataCity = data.filter((n) => n._id === districts.value)
+                if (this.value != "") {
+                  const dataWards = dataCity[0].wards
+
+                  for(const w of dataWards){
+                    wards.options[wards.options.length] = new Option(w.name, w.code)
+                  }
+                }
+                var s = document.querySelector(".wardcode").innerHTML 
+                for(var i = 0; i < wards.options.length; i++){
+                    if(wards.options[i].value == s){
+                        wards.options[0].selected = false
+                        wards.options[i].selected = true
+                        break
+                    }
+                }
+                
+            }
+            //------------------------------------END xu li render--------------------------------------------
+
+            districts.onchange = function(){
+                wards.length = 1
+                const dataCity = data.filter((n) => n._id === districts.value)
+                if (this.value != "") {
+                  const dataWards = dataCity.filter(n => n._id === this.value)[0].wards
+
+                  for(const w of dataWards){
+                    wards.options[wards.options.length] = new Option(w.name, w.code)
+                  }
+                } 
+            } 
+        }
+        //--------------------------------END show select quan huyen-----------------------------------
+        //--------------------------------Xu li checkbox---------------------------------------------
+        var sType = document.querySelector(".typeID").innerHTML
+        var arrType = sType.split(",")
+        var a = document.querySelectorAll(".typeDOM")
+        for(var i = 0; i < a.length; i++)
+            for(var j = 0; j < arrType.length; j++)
+                if(arrType[j] == a[i].defaultValue)
+                    a[i].checked = true
+
+        var sService = document.querySelector(".serviceID").innerHTML
+        var arrService = sService.split(",")
+        a = document.querySelectorAll(".serviceDOM")
+        for(var i = 0; i < a.length; i++)
+            for(var j = 0; j < arrService.length; j++)
+                if(arrService[j] == a[i].defaultValue)
+                    a[i].checked = true
+})
+</script>

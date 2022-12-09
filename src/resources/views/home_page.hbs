@@ -1,0 +1,111 @@
+<style>
+    .mySlides3 {display:none; width:100%; height: 700px;}
+    .display-container{position:relative}
+
+    /*---Css Nút qua lại---*/
+    .button-left{left:1%; font-size:20px}
+    .button-right{right:1%; font-size:20px }
+    .image-button{border:none;display:inline-block;padding:10px;height:50px;vertical-align:middle;overflow:hidden; color:#fff;background:#000;position:absolute;top:calc(50% - 25px); opacity:0.5;}
+    .image-button:hover{color:#000;background:#ccc; cursor: pointer;}
+
+    /*---Css Chấm tròn---*/
+    .badge {text-align:center; margin-bottom:16px; font-size:20px;position:absolute;bottom:0;}
+    .badge-white{color:#000!important;background-color:#fff!important}
+    .image-badge {display:inline-block;border-radius:50%;height:14px;width:14px; border:1px solid #ccc;}
+    .image-badge:hover{background:#fff; cursor: pointer;}
+
+    .slogan{
+        display:inline-block;
+        top: calc(75% - 25px);
+        position:absolute;
+        color: #fff;
+        font-style: italic;
+        left: 10%;
+        font-size: 35px;
+    }
+    
+    /*---Css Des---*/
+    .mySlidesDes {display: none; width:30%; height: 250px;}
+    .mySlidesDes:hover{
+        transform: scale(1.05); 
+    }
+    .button-leftDes{left:30%; font-size:20px}
+    .button-rightDes{right:30%; font-size:20px }
+    .image-buttonDes{border:none;display:inline-block;padding:10px;height:50px;vertical-align:middle;overflow:hidden; color:#fff;background:#000;position:absolute;top:calc(50% - 25px); opacity:0.5;}
+    .image-buttonDes:hover{color:#000;background:#ccc; cursor: pointer;}
+</style>
+
+<div class="display-container">
+    <img class="mySlides3" src="http://mauweb.monamedia.net/travelwp/wp-content/uploads/2019/01/slider-2.jpeg">
+    <img class="mySlides3" src="http://mauweb.monamedia.net/travelwp/wp-content/uploads/2019/01/1.1.jpeg">
+    <img class="mySlides3" src="http://mauweb.monamedia.net/travelwp/wp-content/uploads/2019/01/slider-1.jpg">
+
+    <button class="image-button button-left" onclick="plusDivs(-1)">&#10094;</button>
+    <button class="image-button button-right" onclick="plusDivs(1)">&#10095;</button>
+    <span class="slogan">Explore the world with <span style="">KTravel</span></span>
+    <div class="badge" style="width:100%">
+        <span class="image-badge" onclick="currentDiv(1)"></span>
+        <span class="image-badge" onclick="currentDiv(2)"></span>
+        <span class="image-badge" onclick="currentDiv(3)"></span>
+    </div>
+</div>
+<div class="mt-4 mb-4 slideshow" style="text-align: center !important;"><span class="mb-4" style="font-size: 25px;color: orange; font-weight: bold;">Famous Destination</span>
+    <div class="display-container">
+        {{#each famousDes}}
+        <a href="/destinations/{{this._id}}">
+            <img class="mySlidesDes" src="{{this.image}}">
+        </a>
+        {{/each}}
+
+        <button class="image-buttonDes button-leftDes" onclick="plusDivsDes(-1)">&#10094;</button>
+        <button class="image-buttonDes button-rightDes" onclick="plusDivsDes(1)">&#10095;</button>
+    </div>
+</div>
+
+<script>
+    var slideIndex = 1
+    var slideIndexDes = 1
+    showDivs(slideIndex)
+    showDivsDes(slideIndexDes)
+
+    function plusDivs(n) {
+        showDivs(slideIndex += n)
+    }
+
+    function plusDivsDes(n) {
+        showDivsDes(slideIndexDes += n)
+    }
+
+    function currentDiv(n) {
+        showDivs(slideIndex = n)
+    }
+
+    function showDivs(n) {
+        var i;
+        var x = document.getElementsByClassName("mySlides3");
+        var dots = document.getElementsByClassName("image-badge");
+        if (n > x.length) {slideIndex = 1}
+        if (n < 1) {slideIndex = x.length}
+        for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";  
+        }
+        for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(" badge-white", "");
+        }
+        x[slideIndex-1].style.display = "block";  
+        dots[slideIndex-1].className += " badge-white";
+    }
+
+    function showDivsDes(n) {
+        var i;
+        var x = document.getElementsByClassName("mySlidesDes");
+        if (n > x.length) {slideIndexDes = 1}
+        if (n < 1) {slideIndexDes = x.length}
+        for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";  
+        }
+        x[slideIndexDes-1].style.display = "inline-block";  
+    }
+
+    document.querySelector(".man").setAttribute("class", "man")
+</script>

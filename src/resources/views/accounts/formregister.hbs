@@ -1,0 +1,93 @@
+<style>
+  h1{
+    text-align: center;
+    color: orange;
+    margin-bottom: 100px;
+  }
+  .main{
+    width: 400px;
+    margin: auto;
+  }
+  label{
+    font-weight: bold;
+  }
+  #err{
+    text-align: center;
+  }
+  button {
+    margin-right: 20px;
+  }
+  #togglePassword, #togglePassword1 {
+      top: auto;
+      display: inline-block;
+      cursor: pointer;
+      position: absolute;
+      margin-left: 5px;
+  }
+</style>
+
+<h1 class="mt-4">Register</h1>
+<div class="main">
+    <form method="POST" action="/account/register" oninput='cpassword.setCustomValidity(cpassword.value != password.value ? "Passwords do not match." : "")'>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" name="password" style="display: inline-block" required>
+            <i class="fa fa-eye" id="togglePassword" onclick="showpass()"></i>
+        </div>
+        <div class="form-group">
+            <label for="cpassword">Confirm password</label>
+            <input type="password" class="form-control" id="cpassword" name="cpassword" style="display: inline-block" required>
+            <i class="fa fa-eye" id="togglePassword1" onclick="showpass1()"></i>
+        </div>
+        <button class="btn btn-primary" id="button">Register</button>
+        <span class="msg">Already have an account?  <a href="/login" style="text-decoration: none;">Login</a></span>
+    </form>
+</div>
+<div class="mt-4" id="err">{{msg}}</div>
+
+<script>
+    function showpass(){
+        var pass = document.querySelector("#password");
+        var togglePassword = document.querySelector("#togglePassword");
+        var type = pass.getAttribute("type") === "password" ? "text" : "password";
+        pass.setAttribute("type", type);
+        var icon = togglePassword.getAttribute("class") == "fa fa-eye" ? "fa fa-eye-slash" : "fa fa-eye"
+        togglePassword.setAttribute("class", icon)
+    }
+    function showpass1(){
+        var pass = document.querySelector("#cpassword");
+        var togglePassword = document.querySelector("#togglePassword1");
+        var type = pass.getAttribute("type") === "password" ? "text" : "password";
+        pass.setAttribute("type", type);
+        var icon = togglePassword.getAttribute("class") == "fa fa-eye" ? "fa fa-eye-slash" : "fa fa-eye"
+        togglePassword.setAttribute("class", icon)
+    }
+        
+    document.addEventListener("DOMContentLoaded", function(){
+        var msg = document.getElementById("err").innerHTML
+        if(msg === "Registered successfully"){
+            var a = document.createElement("a")
+            a.href = "/login"
+            a.className = "direct"
+            a.style = "text-decoration: none; margin-left: 10px;"
+            var node = document.createTextNode("Log in")
+            a.appendChild(node)
+            var parent = document.getElementById("err")
+            parent.appendChild(a)
+            var mess = document.querySelector(".msg")
+            mess.setAttribute("style", "display: none")
+
+        }
+
+        
+    })
+</script>
+

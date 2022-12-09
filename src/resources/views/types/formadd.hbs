@@ -1,0 +1,40 @@
+<style>
+  h1{
+    text-align: center;
+    color: orange;
+    margin-bottom: 100px;
+  }
+  .main{
+    width: 500px;
+    margin-left: 300px;
+  }
+  label{
+    font-weight: bold;
+  }
+</style>
+
+<h1 class="mt-4">Create Type</h1>
+<div class="main">
+  <form method="POST" action="/types/create">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+  </form>
+  <form class="mt-4" method="POST" action="/types/create" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="name">Or upload with File (Excel)</label><a href="https://docs.google.com/spreadsheets/d/1cL5OHRTcJeASlZVX3LKYGVoLX67IXeIW/edit?usp=sharing&ouid=114759917748435653610&rtpof=true&sd=true" style="text-decoration: none;" target="_blank"> Download sample file</a>
+      <input type="file" class="form-control" name="name" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+  </form>
+</div>
+
+<script>
+
+
+
+
+</script>
+

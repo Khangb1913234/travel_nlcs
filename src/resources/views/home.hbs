@@ -1,0 +1,102 @@
+<style>
+    .card {
+        height: 520px;
+    }
+    .col-sm-6 {
+        margin-bottom: 20px;
+    }
+    .pagination {
+        text-align: center;
+    }
+    #paging ul{
+        list-style: none;
+        display: flex;
+    }
+    .input-number-page {
+        margin-left: 10px;
+        width: 50px;
+        height: 35px;
+    }
+    .card:hover {
+        opacity: 0.8;
+    }
+    .point {
+        background: #03ae03;
+        border: 0px solid #000;
+        border-radius: 50%;
+        height: 2em;
+        width: 1em;
+        color: #FFF;
+        text-align: center;
+        line-height: 35px;
+    }
+    
+    a > img{
+        display:block;
+        transition: all .3s ease;
+    }
+    .img-scale{
+        display:block;
+        overflow: hidden;
+    }
+    img:hover {
+        transform: scale(1.3); 
+    }
+</style>
+
+
+<div class="row mt-4">
+    {{#each destinations}}
+    <div class="col-sm-6 col-lg-4">
+        <div class="card">
+            <div class="img-scale">
+                <a href="/destinations/{{this._id}}" style="text-decoration: none;">
+                    <img class="card-img-top" src="{{this.image}}" alt="{{this.name}}" style="height: 300px;">
+                </a>
+            </div>
+            <div class="card-body">
+                <a href="/destinations/{{this._id}}" style="text-decoration: none;">
+                    <div class="row">
+                        <div class="card-title col-2 point">{{this.point}}</div>
+                        <div class="card-title col-10">{{this.name}}</div>
+                    </div>
+                </a>
+                <p class="card-text">{{this.address}}</p>
+                <div class="rows">
+                    <div class="col"><i class="fa fa-comment-o"></i> {{this.count}}</div>
+                </div>
+            </div>
+        </div>     
+    </div>
+    {{/each}}
+    {{#each tours}}
+    <div class="col-sm-6 col-lg-4">
+        <div class="card">
+            <div class="img-scale">
+            <a href="/tours/{{this._id}}" style="text-decoration: none;">
+                <img class="card-img-top" src="{{this.image}}" alt="{{this.title}}" style="height: 300px;">
+            </a>
+            </div>
+            <div class="card-body">
+                <a href="/tours/{{this._id}}" style="text-decoration: none; color: #00CED1 !important;">
+                    <div class="row">
+                        <div class="card-title col-10">{{this.title}}</div>
+                    </div>
+                </a>
+                <div>{{this.time}}</div>
+            </div>
+            <div class="card-body" style="font-size: 25px;font-weight: bold; color: red; border-top: 1px solid #ebebeb;">
+                {{this.price}}
+            </div>
+        </div>     
+    </div>
+    {{/each}}
+</div>
+
+<script>
+    var tag = document.querySelectorAll(".point")
+    for(var i = 0; i < tag.length; i++)
+        if(tag[i].innerHTML == "NaN" || tag[i].innerHTML=="")
+            tag[i].innerHTML = "-"
+</script>
+

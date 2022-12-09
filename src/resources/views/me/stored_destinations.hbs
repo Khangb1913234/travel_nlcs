@@ -1,0 +1,196 @@
+<style>
+    a {
+      color: black;
+    }
+    a:hover {
+        color: orange;
+    }
+    select {
+      width: 120px;
+      margin: 0 6px 12px 6px;
+    }
+    .load-more {
+      text-align: center;
+    }
+    .checkbox {
+      border: 0px; 
+      width: 100%; 
+      height: 1em
+    }
+    .checkbox-all-item {
+      border: 0px; 
+      width: 20px;
+      height: 1em
+    }
+    td > a:hover{
+      color: rgb(193, 129, 11) !important;
+    }
+</style>
+<div class="container">
+
+        <form id="main-form" class="mt-4" method="POST" action="/destinations/action">
+            <h1>My Destination</h1>
+            <div class="mt-4">
+                <div class="form-check">
+                  <input class="form-check-input checkbox-all-item" type="checkbox" value="" id="checkbox-all">
+                  <label class="form-check-label" for="checkbox-all">
+                    Select all
+                  </label>
+                  <select name="action">
+                    <option value="" selected>--- Action ---</option>
+                    <option value="delete">Delete</option>
+                  </select>
+                  <button class="btn btn-primary btn-sm" id="btn-perform" disabled="true">Confirm</button>
+                </div>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">#</th>
+                        <th scope="col">Name
+                          {{{sort "name" _sort}}}
+                        </th>
+                        <th scope="col">Create at
+                          {{{sort "createdAt" _sort}}}
+                        </th>
+                        <th scope="col" colspan="2">Update at
+                          {{{sort "updatedAt" _sort}}}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each destinations}}
+                    <tr>
+                        <td>
+                          <div class="form-check">
+                            <input class="form-check-input checkbox" type="checkbox" value="{{this._id}}" name="destinations[]">
+                          </div>
+                        </td>
+                        <th scope="row">{{sum @index 1}}</th>
+                        <td>{{this.name}}</td>
+                        <td class="create-at">{{this.createdAt}}</td>
+                        <td class="update-at">{{this.updatedAt}}</td>
+                        <td>
+                            <a href="/destinations/edit/{{this._id}}" style="text-decoration: none"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                            <a href="/" data-id="{{this._id}}" data-toggle="modal" data-target="#delete" style="text-decoration: none" class="ml-2 delete-test"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </form>
+</div>
+
+{{!-- <div class="load-more mb-4">
+    <button type="btn btn-primary btn-load-more" onclick="loadData()">Load more</button>
+</div> --}}
+
+
+<!-- Modal -->
+<div class="modal fade" id="delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">This destination will be deleted</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" id="btn-delete">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--hidden delete form-->
+<form method="POST" name="delete-form">
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        var id
+        var mainForm = $("#main-form")
+        var deleteForm = document.forms["delete-form"]
+        var btnDelete = document.getElementById("btn-delete")
+        var checkboxAll = $("#checkbox-all")
+        var itemCheckBox = $("input[name='destinations[]']")
+        var btnPerform = $("#btn-perform")
+        var modalDelete = document.getElementById("delete")
+        $('#delete').on('show.bs.modal', function(event){
+            var button = $(event.relatedTarget)
+            id = button.data("id")
+        })
+        btnDelete.onclick = function(){
+            deleteForm.action = "/destinations/delete/" + id + "?_method=DELETE"
+            deleteForm.submit()
+        }
+        
+        checkboxAll.change(function(){
+            var checkedAll = $(this).prop("checked")
+            if(checkedAll){
+              itemCheckBox.prop("checked", true)
+            }
+            else{
+              itemCheckBox.prop("checked", false)
+            }
+            enablePerform()
+        })
+
+        itemCheckBox.change(function(){
+            var checkedAll = itemCheckBox.length === $("input[name='destinations[]']:checked").length
+            if(checkedAll){
+              checkboxAll.prop("checked", true)
+            }
+            else{
+              checkboxAll.prop("checked", false)
+            }
+            enablePerform()
+        })
+
+        function enablePerform(){
+            var count = $("input[name='destinations[]']:checked").length
+            if(count > 0){
+              btnPerform.prop("disabled", false)
+            }
+            else{
+              btnPerform.prop("disabled", true)           
+            }
+        }
+
+        /* Load more 
+        function loadData(){
+            var btnLoad = document.querySelector("btn-load-more")
+            
+        }*/
+
+        document.querySelector(".man").setAttribute("class", "man")
+
+        document.querySelectorAll(".create-at").forEach(function(elt){
+            var a = new Date(elt.innerHTML)
+            d = a.getDate()
+            m = a.getMonth() + 1
+            y = a.getFullYear()
+            t = a.getHours() + ":" + a.getMinutes() + ":" + a.getSeconds();
+            s = `${d}/${m}/${y}  ${t}`
+            elt.innerHTML = s
+        })
+        document.querySelectorAll(".update-at").forEach(function(elt){
+            var a = new Date(elt.innerHTML)
+            d = a.getDate()
+            m = a.getMonth() + 1
+            y = a.getFullYear()
+            t = a.getHours() + ":" + a.getMinutes() + ":" + a.getSeconds();
+            s = `${d}/${m}/${y}  ${t}`
+            elt.innerHTML = s
+        })
+
+          
+
+    })
+</script>

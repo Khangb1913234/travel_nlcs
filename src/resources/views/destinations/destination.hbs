@@ -1,0 +1,463 @@
+<style>
+    .point {
+        background: #03ae03;
+        border: 0.1875em solid #ffffff;
+        border-radius: 50%;
+        height: 2.5em;
+        width: 2.5em;
+        color: #FFF;
+        text-align: center;
+        line-height: 35px;
+    }
+    .type {
+        background: #b0d9b0;
+        border: 1px solid #ffffff;
+        height: 10px;
+        width: 10px;
+        border-radius: 50px;
+        padding: 2px;
+    }
+    h2{
+        font-weight: bold;
+        text-align: center;
+        color: orange;;
+    }
+    .image{
+        text-align: center;
+    }
+    img {
+        width: 500px;
+    }
+    @import url(http://fonts.googleapis.com/css?family=Calibri:400,300,700);
+
+    .card-no-border .card {
+        border: 0px;
+        border-radius: 4px;
+        -webkit-box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
+        box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05)
+    }
+
+    .card-body {
+        -ms-flex: 1 1 auto;
+        flex: 1 1 auto;
+        padding: 1.25rem
+    }
+
+    /*.comment-widgets .comment-row:hover {
+        background: rgba(0, 0, 0, 0.05);
+    }*/
+
+    .comment-item:hover{
+        background: rgba(0, 0, 0, 0.05);
+    }
+
+    .comment-widgets .comment-row {
+        border-bottom: 1px solid rgba(120, 130, 140, 0.13);
+        padding: 15px;
+    }
+    .comment-text:hover{
+        visibility: hidden;
+    }
+    .comment-text:hover{
+        visibility: visible;
+    }
+
+    .label {
+        padding: 3px 10px;
+        line-height: 13px;
+        color: #ffffff;
+        font-weight: 400;
+        border-radius: 4px;
+        font-size: 75%;
+    }
+
+    .round img {
+        border-radius: 100%;
+    }
+
+    .action-icons a {
+        padding-left: 7px;
+        vertical-align: middle;
+        color: #99abb4;
+    }
+
+    .action-icons a:hover {
+        color: #1976d2;
+    }
+
+    .mt-100 {
+        margin-top: 100px
+    }
+
+    .mb-100 {
+        margin-bottom: 100px
+    }
+    .modify:hover, .delete:hover{
+        cursor: pointer
+    }
+    
+
+    /* :not(:checked) is a filter, so that browsers that don’t support :checked don’t 
+    follow these rules. Every browser that supports :checked also supports :not(), so
+    it doesn’t make the test unnecessarily selective */
+    .rating:not(:checked) > input {
+        position:absolute;
+        top:-9999px;
+        clip:rect(0,0,0,0);
+    }
+
+    .rating:not(:checked) > label {
+        float: right;
+        width:1em;
+        padding:0 .1em;
+        overflow:hidden;
+        white-space:nowrap;
+        cursor:pointer;
+        font-size:200%;
+        line-height:1.2;
+        color:#ddd;
+        text-shadow:1px 1px #bbb, 2px 2px #666, .1em .1em .2em rgba(0,0,0,.5);
+    }
+
+    .rating:not(:checked) > label:before {
+        content: '★ ';
+    }
+
+    .rating > input:checked ~ label {
+        color: #f70;
+        text-shadow:1px 1px #c60, 2px 2px #940, .1em .1em .2em rgba(0,0,0,.5);
+    }
+
+    .rating:not(:checked) > label:hover,
+    .rating:not(:checked) > label:hover ~ label {
+        color: gold;
+        text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5);
+    }
+
+    .rating > input:checked + label:hover,
+    .rating > input:checked + label:hover ~ label,
+    .rating > input:checked ~ label:hover,
+    .rating > input:checked ~ label:hover ~ label,
+    .rating > label:hover ~ input:checked ~ label {
+        color: #ea0;
+        text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5);
+    }
+
+    .rating > label:active {
+        position:relative;
+        top:2px;
+        left:2px;
+    }
+
+    /* end of Lea's code */
+
+    /*
+    * Clearfix from html5 boilerplate
+    */
+
+    .clearfix:before,
+    .clearfix:after {
+        content: " "; /* 1 */
+        display: table; /* 2 */
+    }
+
+    .clearfix:after {
+        clear: both;
+    }
+
+    /*
+    * For IE 6/7 only
+    * Include this rule to trigger hasLayout and contain floats.
+    */
+
+    .clearfix {
+        *zoom: 1;
+    }
+
+    /* my stuff */
+    #status, button {
+        margin: 20px 0;
+    }
+
+    .tour-link, .filter-type, .filter-service {
+        text-decoration: none; 
+        color: #000 !important;
+    }
+    .tour-link:hover, .filter-type:hover, .filter-service:hover {
+        text-decoration: none;
+        color: rgb(208, 135, 0) !important;
+        font-weight: bold;
+    }
+    a > img{
+        display:block;
+        transition: all .3s ease;
+    }
+    .img-scale{
+        display:block;
+        overflow: hidden;
+    }
+    .scale-similar:hover {
+        transform: scale(1.3); /* cỡ zoom khi di chuột vào */
+    }
+</style>
+
+<div class="container">
+    <h2 class="mt-4">
+        {{destinations.name}}    
+    </h2>
+    <div class="row">
+        <div class="mt-4 image col">
+            <img src="{{destinations.image}}" alt="{{destinations.name}}" style="width: 488px; height: 350px;">
+        </div>
+        <div class="col mt-4">
+            <div class="point">{{rate.point}}</div>
+            <div class="ml-2"><i class="fa fa-map-marker"> {{destinations.address}}</i></div>
+            <div class="ml-2">Types: {{#each types}}<a class="filter-type" href="/destinations/filter/0/0/{{this._id}}/0"><span class="type">{{this.name}}</span></a> {{/each}}</div>
+            <div class="ml-2">Services: {{#each services}}<a class="filter-service" href="/destinations/filter/0/0/0/{{this._id}}"><span class="type">{{this.name}}</span></a> {{/each}}</div>
+            <div class="ml-2">Capacity: {{destinations.capacity}} people</div>
+            <div class="ml-2"><i class="oi oi-clock"> {{destinations.operatingTime}}</i></div>
+            <div class="ml-2"><i class="oi oi-tag"> {{destinations.price}}</i></div>
+            <div class="ml-2">Tours: {{#each tours}}<a class="tour-link" href="/tours/{{this._id}}"><span class="type">{{this.title}}</span></a> {{/each}}</div>
+            <div class="ml-2"><i class="oi oi-globe"> <a class="contact-detail" href="{{destinations.contact}}" target="blank" style="text-decoration: none;">{{destinations.contact}}</a></i></div>
+            <div class="mt-4">{{destinations.content}}</div>   
+        </div>
+    </div>
+    
+    <button id="btn-review" class="review-test btn btn-primary mt-4" data-toggle="modal" data-target="#review" style="text-decoration: none">Review</button>
+    <!-- Modal -->
+    <div class="modal fade" id="review" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title notify-review" id="exampleModalLabel">Review for this place ?</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form id="rating-form" class="mt-4" name="rating-form">
+            <div class="rating">
+                <input id="star5" type="radio" name="rate" value="5"><label for="star5" title="5"></label>
+                <input id="star4" type="radio" name="rate" value="4"><label for="star4" title="4"></label>
+                <input id="star3" type="radio" name="rate" value="3"><label for="star3" title="3"></label>
+                <input id="star2" type="radio" name="rate" value="2"><label for="star2" title="2"></label>
+                <input id="star1" type="radio" name="rate" value="1"><label for="star1" title="1"></label>
+                <input type="text" style="display:none" id="destinationId" name="destinationId" value="{{destinations._id}}">
+                <input type="text" style="display:none" id="creator" name="creator" value="{{account.username}}">  
+                <textarea class="ml-4" name="content" id="content" cols="50" rows="4" placeholder="Your felling..."></textarea> 
+            </div>
+            <div class="alert" style="display: none;">Please select point</div>
+            <button type="submit" class="btn-rate btn btn-primary ml-4">Submit</button>  
+        </form>
+        </div>
+    </div>
+    </div>
+
+    <div class="mb-4" id="main-rating">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Recent Reviews ({{rate.count}})</h4>
+                    </div>
+                    <div class="comment-widgets m-b-20">
+                        <div class="d-flex flex-row comment-row">
+                            <div class="comment-text w-100">
+                                {{#each rating}}
+                                <div class="mb-2 comment-item" style="border: 1px solid rgb(226, 220, 220); border-radius: 5px; ">
+                                <span class="creator ml-2" style="font-weight: bold; font-size: large">{{this.creator}} </span><span class="date" style="font-size: 11px;"> {{this.createdAt}}</span>
+                                <div class="comment-footer">
+                                    
+                                    {{!-- <a href="/" data-id="{{this._id}}" data-content="{{this.content}}" data-toggle="modal" data-target="#update" class="update-test">
+                                        <span class="oi oi-pencil modify {{this.creator}}" style="display: none"></span>
+                                    </a>
+                                    <a href="/" data-id="{{this._id}}" data-toggle="modal" data-target="#delete" class="delete-test">
+                                        <span class="oi oi-trash delete {{this.creator}}" style="display: none"></span>
+                                    </a> --}}
+                                </div>
+                                <div class="point ml-2">{{this.rate}}</div>
+                                <p class="m-b-5 m-t-10 ml-2">{{this.content}}</p>
+                                </div>
+                                {{/each}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <span style="font-size: 25px; text-align: center">Similar Destinations</span>
+                {{#each destinationSimilar}}
+                    <div class="card mb-4">
+                        <div class="img-scale">
+                        <a href="/destinations/{{this._id}}" style="text-decoration: none;">
+                            <img class="card-img-top scale-similar" src="{{this.image}}" alt="{{this.name}}" style="height: 300px;">
+                        </a>
+                        </div>
+                        <div class="card-body">
+                            <a href="/destinations/{{this._id}}" style="text-decoration: none;">
+                                <div class="row">
+                                    {{!-- <div class="card-title col-2 point">{{this.point}}</div> --}}
+                                    <div class="card-title col-10">{{this.name}}</div>
+                                </div>
+                            </a>
+                            <p class="card-text">{{this.address}}</p>
+                            {{!-- <div class="rows">
+                                <div class="col"><i class="fa fa-comment-o"></i> {{this.count}}</div>
+                            </div> --}}
+                        </div>
+                    </div> 
+                {{/each}}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">This comment will be deleted</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" id="btn-delete">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="update" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">This comment will be updated</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-footer">
+        <form method="POST" name="update-form">
+            <textarea name="content" id="content-comment" cols="40" rows="4"></textarea>
+            <button type="button" class="btn btn-primary" id="btn-update">Update</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="check_auth_comment" style="display:none;">{{account.username}}</div>
+
+<!--hidden delete form-->
+<form method="POST" name="delete-form">
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        var id, id1;
+        var modifyTag = document.querySelectorAll(".modify")
+        var deleteTag = document.querySelectorAll(".delete")
+        var acc = document.querySelector(".acc")
+        var checkAuth = document.querySelector(".check_auth_comment")
+        var btnDelete = document.getElementById("btn-delete")
+        var deleteForm = document.forms["delete-form"]
+        var btnUpdate = document.getElementById("btn-update")
+        var updateForm = document.forms["update-form"]
+        var contentComment = document.getElementById("content-comment")
+        var checkCmt = document.querySelector(".check-cmt")
+        
+        for(var i=0; i < modifyTag.length; i++){
+            if(modifyTag[i].classList.contains(checkAuth.innerHTML))
+                modifyTag[i].removeAttribute("style")
+            if(deleteTag[i].classList.contains(checkAuth.innerHTML) || acc.innerHTML)
+                deleteTag[i].removeAttribute("style")       
+
+        }
+
+        var btnRate = document.querySelector(".btn-rate")
+        var ratingForm = document.getElementById("rating-form")
+        btnRate.addEventListener("click", function(event){
+            event.preventDefault()
+            var starRate = document.querySelectorAll(".starrate")
+            if(document.getElementById("star1").checked || document.getElementById("star2").checked || document.getElementById("star3").checked || document.getElementById("star4").checked || document.getElementById("star5").checked){
+                ratingForm.action="/rating/create" 
+                ratingForm.method="POST"
+                ratingForm.submit()
+            }   
+            else{
+                document.querySelector(".alert").removeAttribute("style")
+                document.querySelector(".alert").setAttribute("style", "color: red")
+            }
+        })
+
+        $('#delete').on('show.bs.modal', function(event){
+            var button = $(event.relatedTarget)
+            id = button.data("id")
+        })
+        btnDelete.onclick = function(){
+            var check = acc.innerHTML;
+            if(check == '')
+                check = "false"
+            else    
+                check = "true"
+            console.log(check)
+            deleteForm.action = "/comments/delete/" + id + "/" + checkAuth.innerHTML + "/" + check + "?_method=DELETE"
+            deleteForm.submit()
+        }
+
+        $('#update').on('show.bs.modal', function(event){
+            var button1 = $(event.relatedTarget)
+            id1 = button1.data("id")
+            content = button1.data("content")
+            contentComment.value = content
+        })
+        
+        btnUpdate.onclick = function(){
+            updateForm.action = "/comments/update/" + id1 + "/" + checkAuth.innerHTML + "?_method=PUT"
+            updateForm.submit()
+
+        }
+
+        document.querySelectorAll(".date").forEach(function(elt){
+            var a = new Date(elt.innerHTML)
+            d = a.getDate()
+            m = a.getMonth() + 1
+            y = a.getFullYear()
+            t = a.getHours() + ":" + a.getMinutes() + ":" + a.getSeconds();
+            s = `${d}/${m}/${y}  ${t}`
+            elt.innerHTML = s
+        })
+        
+        //$('input[type=radio]').on('change', function() {
+        //    $(this).closest("form").submit();
+        //});
+        
+        
+        if(acc.innerHTML != "tv"){
+            //document.getElementById("btn-review").style = "display: none;"
+            document.querySelector(".notify-review").innerHTML = "You must be member to review"
+            document.getElementById("main-rating").classList = "mt-4 mb-4"
+            ratingForm.style = "display: none;"
+        }
+
+        var contactDetail = document.querySelector(".contact-detail").innerHTML
+        if(!contactDetail.includes("http")){
+            document.querySelector(".oi-globe").classList = "oi oi-phone"
+            var s = contactDetail
+            var span = document.createElement("span");
+            span.textContent = s
+            document.querySelector(".contact-detail").replaceWith(span)
+        }
+        var tag = document.querySelectorAll(".point")
+        for(var i = 0; i < tag.length; i++)
+            if(tag[i].innerHTML == "NaN")
+                tag[i].innerHTML = "-"
+        })
+    
+</script>

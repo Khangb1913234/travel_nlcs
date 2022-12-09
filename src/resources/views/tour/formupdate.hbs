@@ -1,0 +1,68 @@
+<style>
+  h1{
+    text-align: center;
+    color: red;
+    margin-bottom: 10px;
+  }
+  .main{
+    width: 500px;
+    margin-left: 300px;
+  }
+  label{
+    font-weight: bold;
+  }
+</style>
+
+<h1 class="mt-4">Update Tour</h1>
+<div class="main">
+  <form method="POST" action="/tours/update/{{tour._id}}?_method=PUT">
+  <div class="form-group">
+    <label for="title">Name</label>
+    <input type="text" class="form-control" value="{{tour.title}}" id="title" name="title">
+  </div>
+  <div class="form-group">
+    <label for="content">Content</label>
+    <textarea class="form-control" id="content" name="content" rows="5">{{tour.content}}</textarea>
+  </div>
+  <div class="form-group">
+      <label for="time">Time</label>
+      <input type="text" class="form-control" id="time" name="time" value="{{tour.time}}" placeholder="Ex: 2 days 1 night">
+    </div>
+  <div class="form-group">
+    <label for="price">Price</label>
+    <input type="text" class="form-control" id="price" name="price" value = "{{tour.price}}" placeholder="Ex: 100.000">
+  </div>
+  <div class="form-group">
+    <label for="contact">Contact</label>
+    <input type="text" class="form-control" id="contact" name="contact" value="{{tour.contact}}" placeholder="Ex: https://dulichviet.com/">
+  </div>
+  <p style="font-weight: bold;">Destination</p>
+  <div class="Des row">
+      {{#each destinations}}
+          <div class="col-6"><input class="destinationDOM"type="checkbox" value="{{this._id}}" name="destinations[]">{{this.name}}</div>
+      {{/each}}
+  </div>
+  <div class="form-group mt-4">
+    <label for="image">Image</label>
+    <input type="text" class="form-control" value="{{tour.image}}" id="image" name="image" required>
+  </div>
+
+  <button type="submit" class="btn btn-primary mb-4">Save</button>
+</form>
+</div>
+
+<div class="destinationID" style="display: none;">{{tour.destinations}}</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        //--------------------------------Xu li checkbox---------------------------------------------
+        var sType = document.querySelector(".destinationID").innerHTML
+        var arrType = sType.split(",")
+        var a = document.querySelectorAll(".destinationDOM")
+        for(var i = 0; i < a.length; i++)
+            for(var j = 0; j < arrType.length; j++)
+                if(arrType[j] == a[i].defaultValue)
+                    a[i].checked = true
+
+})
+</script>

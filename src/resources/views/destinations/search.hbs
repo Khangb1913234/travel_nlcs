@@ -1,0 +1,118 @@
+<style>
+    .col-sm-6 {
+        margin-bottom: 20px;
+    }
+    .pagination {
+        text-align: center;
+    }
+    #paging ul{
+        list-style: none;
+        display: flex;
+    }
+    .input-number-page {
+        margin-left: 10px;
+        width: 50px;
+        height: 35px;
+    }
+</style>
+
+<div class="mt-4">
+    <form class="form-inline my-2 my-lg-0" id="form-search" method="GET">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" id="input-search"> 
+        <button class="btn btn-success my-2 my-sm-0" type="submit" id="btn-search">Search</button>
+    </form>
+    <div class="row justify-content-md-center p-2">
+        <div class="col-md-auto">
+          <select class="form-select form-select-sm mb-3" id="district" aria-label=".form-select-sm" name="district">
+            <option value="" selected>--- Select District ---</option>
+          </select>
+          <select class="form-select form-select-sm" id="ward" aria-label=".form-select-sm" name="ward">
+            <option value="" selected>--- Select Village ---</option>
+          </select>
+          <button class="btn btn-success" id="btn-filter">Filter</button>
+        </div>    
+    </div>
+    <div class="row mt-4">
+        {{#each destinations}}
+        <div class="col-sm-6 col-lg-4">
+            <div class="card">
+                <a href="/destinations/{{this._id}}" style="text-decoration: none;">
+                    <img class="card-img-top" src="{{this.image}}" alt="{{this.name}}" style="height: 300px;">
+                </a>
+                <div class="card-body">
+                    <a href="/destinations/{{this._id}}" style="text-decoration: none;">
+                        <h5 class="card-title">{{this.name}}</h5>
+                    </a>
+                    <p class="card-text">{{this.content}}</p>
+                </div>
+            </div>     
+        </div>
+        {{/each}}
+    </div>
+</div>
+
+<form name="filter-form"></form>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        var keyword
+        var formSearch = document.forms["form-search"]
+        var btnSearch = document.getElementById("btn-search")
+
+        
+        $("#btn-search").click(function(event){
+            keyword = $("#input-search").val()
+        })
+
+        btnSearch.onclick = function(){
+            
+            if(keyword.length != 0)
+                formSearch.action = "/destinations/search/" + keyword + "/"
+                formSearch.submit()
+        }
+
+        $.ajax({
+            url: "/villages/",
+            type: "GET",
+        })
+        .then(function(data){
+            renderDistrict(data)
+        })
+        .catch(function(err){
+            console.log(err)
+        })
+
+        var districts = document.getElementById("district")
+        var wards = document.getElementById("ward")
+        var btnFilter = document.getElementById("btn-filter")
+        var filterForm = document.forms["filter-form"]
+
+        function renderDistrict(data){
+            for(const x of data){
+                districts.options[districts.options.length] = new Option(x.name, x._id)
+                //districts.value = x._id
+            }
+            districts.onchange = function(){
+                wards.length = 1
+                const dataCity = data.filter((n) => n._id === districts.value)
+                if (this.value != "") {
+                    const dataWards = dataCity.filter(n => n._id === this.value)[0].wards
+
+                    for(const w of dataWards){
+                    wards.options[wards.options.length] = new Option(w.name, w.code)
+                    }
+                }
+            } 
+        }
+        
+        btnFilter.onclick = function(){
+            var districtID = districts.value
+            var wardCode = wards.value
+            filterForm.action = `/destinations/filter/${districtID}/${wardCode}`
+            filterForm.submit()
+        }
+
+    })
+</script>
+

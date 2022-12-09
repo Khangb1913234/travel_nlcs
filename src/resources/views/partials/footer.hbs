@@ -1,0 +1,176 @@
+<style>
+    .copyright{
+        color: #FFF;
+    }
+    .ma:{
+        
+    }
+    .col-sm-6 {
+          margin-bottom: 20px;
+    }
+    .pagination {
+        text-align: center;
+    }
+    #paging ul{
+        list-style: none;
+        display: flex;
+    }
+    .input-number-page {
+        margin-left: 10px;
+        width: 50px;
+        height: 35px;
+    }
+</style>
+
+<!-- Paging tự code -->
+<div class="row justify-content-center" id="paging-myself" style="display: none;">
+    <nav aria-label="Page navigation example" style="display: flex">
+        <ul class="pagination" id="pagination">
+            <li class="page-item"><a class="page-link pre_destination_tour" href="/destinations?pageNumber={{exceptPage pageNumber 1}}">Previous</a></li>
+            <li class="page-item"><a class="page-link pageone_destination_tour" href="/destinations?pageNumber=1">1</a></li>
+            {{{displayPage pageNumber total refF}}}
+        </ul>
+        <form method="GET" action="">
+            {{!-- <input type="checkbox" name="_page"> --}}
+            <input type="text" class="input-number-page" name="pageNumber">
+            <button class="btn btn-primary">Go</button>
+        </form>
+    </nav>
+</div> 
+
+{{!-- <footer class="bg-secondary text-center text-lg-start" style="position:sticky !important; top:100% !important">
+  <div class="text-center p-4 copyright" style="background-color: rgba(0, 0, 0, 0.05);">
+    <div class="text-center p-4">
+      Contact for work: <a class="mail" href="mailto:mail@mail.com" style="text-decoration: none;">ktravel@gmail.com</a>
+    </div>
+    © 2022 Copyright:
+    <a class="text-reset fw-bold" href="/" style="text-decoration: none;">KTravel</a>
+  </div>
+</footer> --}}
+
+  <!-- Footer -->
+  <footer class="text-center text-lg-start text-white" style="background-color: #6C757D; position:sticky !important; top:100% !important">
+    <!-- Section: Links  -->
+    <section class="">
+      <div class="container text-center text-md-start mt-5">
+        <!-- Grid row -->
+        <div class="row mt-3">
+          <!-- Grid column -->
+          <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4 mt-4">
+            <!-- Content -->
+            <h6 class="text-uppercase fw-bold">KTravel</h6>
+            <hr
+                class="mb-4 mt-0 d-inline-block mx-auto"
+                style="width: 60px; background-color: #7c4dff; height: 2px"
+                />
+            <p>
+              Explore the world with KTravel
+              Always by your side
+            </p>
+          </div>
+          <!-- Grid column -->
+
+          <!-- Grid column -->
+          <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4 mt-4">
+            <!-- Links -->
+            <h6 class="text-uppercase fw-bold">Menu</h6>
+            <hr
+                class="mb-4 mt-0 d-inline-block mx-auto"
+                style="width: 60px; background-color: #7c4dff; height: 2px"
+                />
+            <p>
+              <a href="http://localhost:3000/destinations" style="text-decoration: none;">Destination</a>
+            </p>
+            <p>
+              <a href="http://localhost:3000/tours" style="text-decoration: none;">Tour</a>
+            </p>
+            <p>
+              <a href="#!" style="text-decoration: none;">Help</a>
+            </p>
+          </div>
+          <!-- Grid column -->
+
+          <!-- Grid column -->
+          <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4 mt-4">
+            <!-- Links -->
+            <h6 class="text-uppercase fw-bold">Useful links</h6>
+            <hr
+                class="mb-4 mt-0 d-inline-block mx-auto"
+                style="width: 60px; background-color: #7c4dff; height: 2px"
+                />
+            <p>
+              <a href="https://dulichviet.com.vn/" target="_blank" style="text-decoration: none;">Dulichviet</a>
+            </p>
+            <p>
+              <a href="https://thamhiemmekong.com/" target="_blank" style="text-decoration: none;">Mekong</a>
+            </p>
+            <p>
+              <a href="https://www.ivivu.com/" target="_blank" style="text-decoration: none;">Ivivu</a>
+            </p>
+          </div>
+          <!-- Grid column -->
+
+          <!-- Grid column -->
+          <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4 mt-4">
+            <!-- Links -->
+            <h6 class="text-uppercase fw-bold">Contact</h6>
+            <hr
+                class="mb-4 mt-0 d-inline-block mx-auto"
+                style="width: 60px; background-color: #7c4dff; height: 2px"
+                />
+            <p><i class="fa fa-envelope mr-3" style="font-size: 15px;"></i> <a class="mail" href="mailto:mail@mail.com" style="text-decoration: none;">ktravel@gmail.com</a></p>
+            <p><i class="fa fa-phone mr-4" style="font-size: 20px;"></i><a class="phone" href="tel:+84389194171" style="text-decoration: none;">+84 389 194 171</a></p>
+          </div>
+          <!-- Grid column -->
+        </div>
+        <!-- Grid row -->
+      </div>
+    </section>
+    <!-- Section: Links  -->
+
+    <!-- Copyright -->
+    <div
+         class="text-center p-3"
+         style="background-color: rgba(0, 0, 0, 0.2)"
+         >
+      © 2022 Copyright:
+      <a class="text-reset fw-bold" href="/" style="text-decoration: none;">KTravel</a>
+    </div>
+    <!-- Copyright -->
+  </footer>
+  <!-- Footer -->
+
+<!-- End of .container -->
+
+<script>
+  // Paging tự code
+    function createPage(nameTag1, nameTag2, href, text, idParentTag){
+        var elt1 = document.createElement(nameTag1)
+        elt1.className = "page-item"
+        var elt2 = document.createElement(nameTag2)
+        elt2.className = "page-link"
+        elt2.href = href
+        var node = document.createTextNode(text)
+        elt2.appendChild(node)
+        elt1.appendChild(elt2)
+        var elt3 = document.getElementById("pagination")
+        elt3.appendChild(elt1)
+    }
+    function pagination(){
+        if(location.href == "http://localhost:3000/destinations" || location.href.includes("http://localhost:3000/destinations?pageNumber")){
+            createPage("li", "a", "/destinations?pageNumber={{total}}", "{{total}}", "pagination")
+            createPage("li", "a", "/destinations?pageNumber={{sumPage pageNumber 1 total}}", "Next", "pagination")
+        }
+        else if(location.href == "http://localhost:3000/tours" || location.href.includes("http://localhost:3000/tours?pageNumber")){
+            createPage("li", "a", "/tours?pageNumber={{total}}", "{{total}}", "pagination")
+            createPage("li", "a", "/tours?pageNumber={{sumPage pageNumber 1 total}}", "Next", "pagination")
+            document.querySelector(".pre_destination_tour").setAttribute("href", "/tours?pageNumber={{exceptPage pageNumber 1}}")
+            document.querySelector(".pageone_destination_tour").setAttribute("href", "/tours?pageNumber=1")
+        }
+    }
+    if(location.href == "http://localhost:3000/destinations" || location.href.includes("http://localhost:3000/destinations?pageNumber") || location.href == "http://localhost:3000/tours" || location.href.includes("http://localhost:3000/tours?pageNumber")){
+        document.getElementById("paging-myself").style = "display: relative"
+        pagination()
+    }
+
+</script>
