@@ -73,7 +73,6 @@ exports.delete = function(req, res, next){
                     
                     Approval.findOneAndDelete({_id: id, creator: account.username})
                         .then(function(){
-                            console.log(id)
                             res.redirect("back")
                         })
                         .catch(next)

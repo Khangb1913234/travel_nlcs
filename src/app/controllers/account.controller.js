@@ -129,9 +129,9 @@ exports.update = function(req, res, next){
             if(account.role == "qtv"){
                 account = account.toObject()
                 if(req.body.role == "qtv" || req.body.role == "ctv1" || req.body.role == "ctv2" || req.body.role == "tv"){
-                    Account.findOneAndUpdate({_id: id}, req.body, {new: true})
+                    Account.findOneAndUpdate({_id: id, role: {$ne: "qtv"}}, req.body, {new: true})
                         .then(function(){
-                            res.redirect("back")
+                            res.redirect("/me/stored/accounts")
                         })
                         .catch(next)
                 }
@@ -155,7 +155,7 @@ exports.delete = function(req, res, next){
         .then(function(account){
             if(account.role == "qtv"){
                 account = account.toObject()
-                Account.findOneAndDelete({_id: id})
+                Account.findOneAndDelete({_id: id, role: {$ne: "qtv"}})
                     .then(function(){
                         res.redirect("back")
                     })
