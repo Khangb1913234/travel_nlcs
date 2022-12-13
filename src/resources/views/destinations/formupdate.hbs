@@ -15,7 +15,7 @@
 
 <h1 class="mt-4">Update Destination</h1>
 <div class="main">
-  <form method="POST" action="/destinations/update/{{destination._id}}?_method=PUT">
+  <form method="POST" action="/destinations/update/{{destination._id}}?_method=PUT" enctype="multipart/form-data">
   <div class="form-group">
     <label for="name">Name</label>
     <input type="text" class="form-control" value="{{destination.name}}" id="name" name="name">
@@ -54,6 +54,10 @@
     <label for="contact">Contact</label>
     <input type="text" class="form-control" id="contact" name="contact" value="{{destination.contact}}" placeholder="Ex: https://www.mykhanh.com/">
   </div>
+  <div class="form-group">
+    <label for="map">Google map</label>
+    <input type="text" class="form-control" id="map" name="map" value="{{destination.map}}" placeholder="Ex: ">
+  </div>
   <p style="font-weight: bold;">Service</p>
   <div class="serviceDes row">
       {{#each services}}
@@ -67,8 +71,8 @@
       {{/each}}
   </div>
   <div class="form-group mt-4">
-    <label for="image">Image</label>
-    <input type="text" class="form-control" value="{{destination.image}}" id="image" name="image" required>
+      <label for="image">Image</label>
+      <input type="file" multiple name="image[]">
   </div>
 
   <button type="submit" class="btn btn-primary mb-4">Save</button>

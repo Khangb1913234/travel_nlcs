@@ -12,6 +12,7 @@ const schema = mongoose.Schema(
 		contact: String,
 		price: String,
 		capacity: String,
+		map: String,
 		types: [mongoose.Schema.Types.ObjectId],
 		services:[mongoose.Schema.Types.ObjectId],
 		tourId: [mongoose.Schema.Types.ObjectId],

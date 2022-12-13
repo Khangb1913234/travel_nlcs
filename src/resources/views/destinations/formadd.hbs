@@ -22,64 +22,67 @@
 
 <h1 class="mt-4">Create Destination</h1>
 <div class="main">
-  <form method="POST" action="/destinations/create">
-    <div class="form-group">
+  <div id="btn-upload-excel" class="btn btn-primary mb-4" onclick="uploadExcel()" style="color: white !important;">Or Upload with file (excel)</div>
+  <form method="POST" action="/destinations/create" name="form-create" enctype="multipart/form-data">
+    <div class="form-group" id="delete-upload-1">
       <label for="name">Name</label>
-      <input type="text" class="form-control" id="name" name="name">
+      <input type="text" class="form-control" id="name" name="name" required>
     </div>
-    <div class="form-group">
+    <div class="form-group" id="delete-upload-2">
       <label for="content">Content</label>
       <textarea class="form-control" id="content" name="content" rows="5"></textarea>
     </div>
-    <div class="form-group">
+    <div class="form-group" id="delete-upload-3">
       <label for="content">Address</label>
       <input type="text" class="form-control" id="address" name="address" placeholder="Ex: 335 Lộ Vòng Cung, Xã Mỹ Khánh,  Huyện Phong Điền">
     </div>
-    <div class="row justify-content-md-center p-2">
+    <div class="row justify-content-md-center p-2" id="delete-upload-9">
       <div class="col-md-auto">
-        <select class="form-select form-select-sm mb-3" id="district" aria-label=".form-select-sm" name="district">
+        <select class="form-select form-select-sm mb-3" id="district" aria-label=".form-select-sm" name="district" required>
           <option value="" selected>District</option>
         </select>
-        <select class="form-select form-select-sm" id="ward" aria-label=".form-select-sm" name="ward">
+        <select class="form-select form-select-sm" id="ward" aria-label=".form-select-sm" name="ward" required>
           <option value="" selected>Ward</option>
         </select>
       </div>    
     </div>
-    <div class="form-group">
+    <div class="form-group" id="delete-upload-4">
       <label for="time">Operating Time</label>
       <input type="text" class="form-control" id="time" name="operatingTime" placeholder="Ex: 7:00-22:00">
     </div>
-    <div class="form-group">
+    <div class="form-group" id="delete-upload-5">
       <label for="price">Price</label>
       <input type="text" class="form-control" id="price" name="price" placeholder="Ex: 100.000 VND">
     </div>
-    <div class="form-group">
+    <div class="form-group" id="delete-upload-6">
       <label for="capacity">Capacity</label>
       <input type="text" class="form-control" id="capacity" name="capacity" placeholder="Ex: 1000 people">
     </div>
-    <div class="form-group">
+    <div class="form-group" id="delete-upload-7">
       <label for="contact">Contact</label>
       <input type="text" class="form-control" id="contact" name="contact" placeholder="Ex: https://www.mykhanh.com/">
     </div>
-    <p style="font-weight: bold;">Service</p>
-    <div class="serviceDes row">
+    <div class="form-group" id="delete-upload-8">
+      <label for="map">Google map</label>
+      <input type="text" class="form-control" id="map" name="map" placeholder="Ex: ">
+    </div>
+    <p style="font-weight: bold;" id="delete-upload-12">Service</p>
+    <div class="serviceDes row" id="delete-upload-10">
         {{#each services}}
             <div class="col-4"><input type="checkbox" value="{{this._id}}" name="services[]">{{this.name}}</div>
         {{/each}}
     </div>
-    <p class="mt-4" style="font-weight: bold;">Type</p>
-    <div class="typeDes row">
+    <p class="mt-4" style="font-weight: bold;" id="delete-upload-13">Type</p>
+    <div class="typeDes row" id="delete-upload-11">
         {{#each types}}
             <div class="col-4"><input type="checkbox" value="{{this._id}}" name="types[]">{{this.name}}</div>
         {{/each}}
     </div>
-    <div class="form-group mt-4">
+    <div class="form-group mt-4" id="delete-upload-14">
       <label for="image">Image</label>
-      <input type="text" class="form-control" id="image" name="image" required>
+      {{!-- <input type="text" class="form-control" id="image" name="image" required> --}}
+      <input type="file" multiple name="image[]">
     </div>
-    {{!-- <div>
-      <input type="time" name="time">
-    </div> --}}
     <button type="submit" class="btn btn-primary mb-4">Create</button>
   </form>
 </div>
@@ -87,36 +90,59 @@
 <script>
 document.addEventListener("DOMContentLoaded", function(){
   $.ajax({
-                url: "/villages/",
-                type: "GET",
-            })
-            .then(function(data){
-                renderDistrict(data)
-            })
-            .catch(function(err){
-                console.log(err)
-            })
+      url: "/villages/",
+      type: "GET",
+  })
+  .then(function(data){
+      renderDistrict(data)
+  })
+  .catch(function(err){
+      console.log(err)
+  })
 
   var districts = document.getElementById("district")
   var wards = document.getElementById("ward")
 
   function renderDistrict(data){
-            for(const x of data){
-                districts.options[districts.options.length] = new Option(x.name, x._id)
-                //districts.value = x._id
-            }
-            districts.onchange = function(){
-                wards.length = 1
-                const dataCity = data.filter((n) => n._id === districts.value)
-                if (this.value != "") {
-                    const dataWards = dataCity.filter(n => n._id === this.value)[0].wards
+      for(const x of data){
+          districts.options[districts.options.length] = new Option(x.name, x._id)
+          //districts.value = x._id
+      }
+      districts.onchange = function(){
+          wards.length = 1
+          const dataCity = data.filter((n) => n._id === districts.value)
+          if (this.value != "") {
+              const dataWards = dataCity.filter(n => n._id === this.value)[0].wards
 
-                    for(const w of dataWards){
-                    wards.options[wards.options.length] = new Option(w.name, w.code)
-                    }
-                }
-            }  
-        }
+              for(const w of dataWards){
+              wards.options[wards.options.length] = new Option(w.name, w.code)
+              }
+          }
+      }  
+  }
+  
+
 })
+
+function uploadExcel(){
+    document.getElementById("delete-upload-1").remove()
+    document.getElementById("delete-upload-2").remove()
+    document.getElementById("delete-upload-3").remove()
+    document.getElementById("delete-upload-4").remove()
+    document.getElementById("delete-upload-5").remove()
+    document.getElementById("delete-upload-6").remove()
+    document.getElementById("delete-upload-7").remove()
+    document.getElementById("delete-upload-8").remove()
+    document.getElementById("delete-upload-9").remove()
+    document.getElementById("delete-upload-10").remove()
+    document.getElementById("delete-upload-11").remove()
+    document.getElementById("delete-upload-12").remove()
+    document.getElementById("delete-upload-13").remove()
+    document.getElementById("delete-upload-14").remove()
+    document.getElementById("btn-upload-excel").remove()
+    var createForm = document.forms["form-create"]
+    createForm.action = "/destinations/create/excel"
+    createForm.innerHTML = '<div class="form-group mt-4"><label for="file">Upload with file (Excel)</label><a href="https://docs.google.com/spreadsheets/d/1-iAZe1aB-tqTvtigK80pGowue84P8O2S/edit?usp=sharing&ouid=114759917748435653610&rtpof=true&sd=true" style="text-decoration: none;" target="_blank"> Download sample file</a><input type="file" class="form-control" id="file" name="file" required></div>' + createForm.innerHTML + '<input type="text" name="excel" value="yes" style="display: none;">'
+}
 
 </script>

@@ -1,4 +1,9 @@
 <style>
+    .mySlidesDes {display: none; width:80%; height: 250px;}
+    .button-leftDes{left:5%; font-size:20px}
+    .button-rightDes{right:5%; font-size:20px }
+    .image-buttonDes{border:none;display:inline-block;padding:10px;height:50px;vertical-align:middle;overflow:hidden; color:#fff;background:#000;position:absolute;top:calc(50% - 25px); opacity:0.5;}
+    .image-buttonDes:hover{color:#000;background:#ccc; cursor: pointer;}
     h2{
         font-weight: bold;
         text-align: center;
@@ -34,7 +39,14 @@
     </h2>
     <div class="row">
         <div class="mt-4 image col">
-            <img src="{{tour.image}}" alt="{{tour.title}}" style="width: 488px; height: 350px;">
+            {{!-- <img src="{{tour.image}}" alt="{{tour.title}}" style="width: 488px; height: 350px;"> --}}
+            <div id="number-image" style="display: none;">{{tour.image}}</div>
+            <div class="mt-4 mb-4 slideshow" style="text-align: center !important;">
+                <div id="image-list" class="display-container">
+                    <button class="image-buttonDes button-leftDes" onclick="plusDivsDes(-1)">&#10094;</button>
+                    <button class="image-buttonDes button-rightDes" onclick="plusDivsDes(1)">&#10095;</button>
+                </div>
+            </div>
         </div>
         <div class="col mt-4">
             <div class="ml-2">Destinations: {{#each destinations}}<a class="destination-link" href="/destinations/{{this._id}}"><span class="destination">{{this.name}}</span></a> {{/each}}</div>
@@ -45,14 +57,15 @@
         </div>
     </div>
 
-    <div class="mt-4" style="font-size: 25px; text-align: center">Similar Tours</div>
+    <div class="mt-4" style="font-size: 25px; text-align: center; font-style: italic">Similar Tours</div>
     <div class="row">
     {{#each tourSimilar}}
         <div class="col-6">
         <div class="card">
             <div class="img-scale">
             <a href="/tours/{{this._id}}" style="text-decoration: none;">
-                <img class="card-img-top scale-similar" src="{{this.image}}" alt="{{this.title}}" style="height: 300px;">
+                <div class="img-temp" style="display: none;">{{this.image}}</div>
+                <img class="card-img-top scale-similar img-new" src="{{this.image}}" alt="{{this.title}}" style="height: 300px;">
             </a>
             </div>
             <div class="card-body">
@@ -72,6 +85,33 @@
 <div class="check_auth_comment" style="display:none;">{{account.username}}</div>
 
 <script>
+    var s = document.getElementById("number-image").innerHTML
+    //s = s.replace(/\\/g, "/")
+    var arr = s.split(",")
+    var imgNumber
+    
+    for(var i = 0; i < arr.length; i++){
+        imgNumber = document.createElement("img")
+        imgNumber.src = arr[i]
+        imgNumber.className = "mySlidesDes"
+        imgNumber.style = 'style="width: 488px; height: 350px;"'
+        document.getElementById("image-list").appendChild(imgNumber)
+    }
+
+    var s = document.querySelectorAll(".img-temp")
+    var numberCard = document.querySelectorAll(".img-new")
+    for(var i = 0; i < numberCard.length; i++){
+       var s_new = s[i].innerHTML
+       for(var j = 0; j < s_new.length; j++)
+            if(s_new[j] == ","){
+                s_new = s_new.slice(0, j)
+                console.log(s_new)
+                break
+            }
+       //s_new = s_new.replace(/\\/g, '/')
+       //s_new = s_new.slice(10)
+       numberCard[i].setAttribute("src", s_new)
+    }
     document.addEventListener("DOMContentLoaded", function(){
         var contactDetail = document.querySelector(".contact-detail").innerHTML
         if(!contactDetail.includes("http")){
@@ -94,6 +134,22 @@
             document.getElementsByClassName("price_convert").innerHTML = s
             s[i].innerHTML = string
         }
-
     })
+    var slideIndexDes = 1
+    showDivsDes(slideIndexDes)
+
+    function plusDivsDes(n) {
+        showDivsDes(slideIndexDes += n)
+    }
+
+    function showDivsDes(n) {
+        var i;
+        var x = document.getElementsByClassName("mySlidesDes");
+        if (n > x.length) {slideIndexDes = 1}
+        if (n < 1) {slideIndexDes = x.length}
+        for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";  
+        }
+        x[slideIndexDes-1].style.display = "inline-block";  
+}
 </script>

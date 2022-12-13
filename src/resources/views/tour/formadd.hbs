@@ -22,36 +22,38 @@
 
 <h1 class="mt-4">Create Tour</h1>
 <div class="main">
-  <form method="POST" action="/tours/create">
-    <div class="form-group">
+  <div id="btn-upload-excel" class="btn btn-primary mb-4" onclick="uploadExcel()" style="color: white !important;">Or Upload with file (excel)</div>
+  <form method="POST" action="/tours/create" name="form-create" enctype="multipart/form-data">
+    <div class="form-group" id="delete-upload-1">
       <label for="title">Title</label>
       <input type="text" class="form-control" id="title" name="title">
     </div>
-    <div class="form-group">
+    <div class="form-group" id="delete-upload-2">
       <label for="content">Content</label>
       <textarea class="form-control" id="content" name="content" rows="5"></textarea>
     </div>
-    <div class="form-group">
+    <div class="form-group" id="delete-upload-3">
       <label for="time">Time</label>
       <input type="text" class="form-control" id="time" name="time" placeholder="Ex: 2 days 1 night">
     </div>
-    <div class="form-group">
+    <div class="form-group" id="delete-upload-4">
       <label for="price">Price</label>
       <input type="text" class="form-control" id="price" name="price" placeholder="Ex: 100.000">
     </div>
-    <div class="form-group">
+    <div class="form-group" id="delete-upload-5">
       <label for="contact">Contact</label>
       <input type="text" class="form-control" id="contact" name="contact" placeholder="Ex: https://dulichviet.com.vn/">
     </div>
-    <p style="font-weight: bold;">Destination</p>
-    <div class="Des row">
+    <p style="font-weight: bold;" id="delete-upload-6">Destination</p>
+    <div class="Des row" id="delete-upload-7">
         {{#each destinations}}
             <div class="col-6"><input type="checkbox" value="{{this._id}}" name="destinations[]">{{this.name}}</div>
         {{/each}}
     </div>
-    <div class="form-group mt-4">
+    <div class="form-group mt-4" id="delete-upload-8">
       <label for="image">Image</label>
-      <input type="text" class="form-control" id="image" name="image">
+      {{!-- <input type="text" class="form-control" id="image" name="image" required> --}}
+      <input type="file" multiple name="image[]">
     </div>
     <button type="submit" class="btn btn-primary mb-4">Create</button>
   </form>
@@ -59,7 +61,20 @@
 
 <script>
 
-
+  function uploadExcel(){
+      document.getElementById("delete-upload-1").remove()
+      document.getElementById("delete-upload-2").remove()
+      document.getElementById("delete-upload-3").remove()
+      document.getElementById("delete-upload-4").remove()
+      document.getElementById("delete-upload-5").remove()
+      document.getElementById("delete-upload-6").remove()
+      document.getElementById("delete-upload-7").remove()
+      document.getElementById("delete-upload-8").remove()
+      document.getElementById("btn-upload-excel").remove()
+      var createForm = document.forms["form-create"]
+      createForm.action = "/tours/create/excel"
+      createForm.innerHTML = '<div class="form-group mt-4"><label for="file">Upload with file (Excel)</label><a href="https://docs.google.com/spreadsheets/d/1-rpCYteyRQER0GdJtAZ0dSNT8iCIzYxW/edit?usp=sharing&ouid=114759917748435653610&rtpof=true&sd=true" style="text-decoration: none;" target="_blank"> Download sample file</a><input type="file" class="form-control" id="file" name="file" required></div>' + createForm.innerHTML + '<input type="text" name="excel" value="yes" style="display: none;">'
+  }
 
 
 </script>

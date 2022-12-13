@@ -51,7 +51,8 @@
         <div class="card">
             <div class="img-scale">
                 <a href="/destinations/{{this._id}}" style="text-decoration: none;">
-                    <img class="card-img-top" src="{{this.image}}" alt="{{this.name}}" style="height: 300px;">
+                    <div class="img-temp" style="display: none;">{{this.image}}</div>
+                    <img class="card-img-top img-new" src="{{this.image}}" alt="{{this.name}}" style="height: 300px;">
                 </a>
             </div>
             <div class="card-body">
@@ -74,7 +75,8 @@
         <div class="card">
             <div class="img-scale">
             <a href="/tours/{{this._id}}" style="text-decoration: none;">
-                <img class="card-img-top" src="{{this.image}}" alt="{{this.title}}" style="height: 300px;">
+                <div class="img-temp" style="display: none;">{{this.image}}</div>
+                <img class="card-img-top img-new" src="{{this.image}}" alt="{{this.title}}" style="height: 300px;">
             </a>
             </div>
             <div class="card-body">
@@ -85,7 +87,7 @@
                 </a>
                 <div>{{this.time}}</div>
             </div>
-            <div class="card-body" style="font-size: 25px;font-weight: bold; color: red; border-top: 1px solid #ebebeb;">
+            <div class="card-body price_convert" style="font-size: 25px;font-weight: bold; color: red; border-top: 1px solid #ebebeb;">
                 {{this.price}}
             </div>
         </div>     
@@ -94,9 +96,37 @@
 </div>
 
 <script>
+    var s = document.querySelectorAll(".img-temp")
+    var numberCard = document.querySelectorAll(".img-new")
+    for(var i = 0; i < numberCard.length; i++){
+       var s_new = s[i].innerHTML
+       for(var j = 0; j < s_new.length; j++)
+            if(s_new[j] == ","){
+                s_new = s_new.slice(0, j)
+                console.log(s_new)
+                break
+            }
+       //s_new = s_new.replace(/\\/g, '/')
+       //s_new = s_new.slice(10)
+       numberCard[i].setAttribute("src", s_new)
+    }
+
     var tag = document.querySelectorAll(".point")
     for(var i = 0; i < tag.length; i++)
         if(tag[i].innerHTML == "NaN" || tag[i].innerHTML=="")
             tag[i].innerHTML = "-"
+    
+    var s = document.querySelectorAll(".price_convert")
+        for(var i = 0; i < s.length; i++){
+            var string = s[i].innerHTML.trim()
+            var len = string.length;
+            for(var j = len - 3; j > 0; j-=3){
+                string = string.slice(0, j) + "." + string.slice(j)
+            }
+            string = string + " VND"
+            string = string.slice(0, 0) + " " + string.slice(0)
+            document.getElementsByClassName("price_convert").innerHTML = s
+            s[i].innerHTML = string
+        }
 </script>
 

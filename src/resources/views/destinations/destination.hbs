@@ -1,4 +1,10 @@
 <style>
+    .mySlidesDes {display: none; width:80%; height: 250px;}
+    .button-leftDes{left:5%; font-size:20px}
+    .button-rightDes{right:5%; font-size:20px }
+    .image-buttonDes{border:none;display:inline-block;padding:10px;height:50px;vertical-align:middle;overflow:hidden; color:#fff;background:#000;position:absolute;top:calc(50% - 25px); opacity:0.5;}
+    .image-buttonDes:hover{color:#000;background:#ccc; cursor: pointer;}
+
     .point {
         background: #03ae03;
         border: 0.1875em solid #ffffff;
@@ -207,7 +213,14 @@
     </h2>
     <div class="row">
         <div class="mt-4 image col">
-            <img src="{{destinations.image}}" alt="{{destinations.name}}" style="width: 488px; height: 350px;">
+            {{!-- <img src="{{destinations.image}}" alt="{{destinations.name}}" style="width: 488px; height: 350px;"> --}}
+            <div id="number-image" style="display: none;">{{destinations.image}}</div>
+            <div class="mt-4 mb-4 slideshow" style="text-align: center !important;">
+                <div id="image-list" class="display-container">
+                    <button class="image-buttonDes button-leftDes" onclick="plusDivsDes(-1)">&#10094;</button>
+                    <button class="image-buttonDes button-rightDes" onclick="plusDivsDes(1)">&#10095;</button>
+                </div>
+            </div>
         </div>
         <div class="col mt-4">
             <div class="point">{{rate.point}}</div>
@@ -282,14 +295,44 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <span style="font-size: 25px; text-align: center">Similar Destinations</span>
-                {{#each destinationSimilar}}
+                <iframe src="{{destinations.map}}" class="mt-4" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <p class="mt-4" style="font-size: 25px; font-style: italic; text-align:center">Nearby Destination</p>
+                <div class="row">
+                    <div class="col-md-6">
+                    {{#each destinationNearby}}
+                    <div class="img-temp" style="display: none;">{{this.image}}</div>
                     <div class="card mb-4">
                         <div class="img-scale">
                         <a href="/destinations/{{this._id}}" style="text-decoration: none;">
-                            <img class="card-img-top scale-similar" src="{{this.image}}" alt="{{this.name}}" style="height: 300px;">
+                            <img class="card-img-top scale-similar img-new" src="{{this.image}}" alt="{{this.name}}" style="height: 300px;">
+                        </a>
+                        </div>
+                        <div class="card-body">
+                            <a href="/destinations/{{this._id}}" style="text-decoration: none;">
+                                <div class="row">
+                                    {{!-- <div class="card-title col-2 point">{{this.point}}</div> --}}
+                                    <div class="card-title col-10">{{this.name}}</div>
+                                </div>
+                            </a>
+                            <p class="card-text">{{this.address}}</p>
+                            {{!-- <div class="rows">
+                                <div class="col"><i class="fa fa-comment-o"></i> {{this.count}}</div>
+                            </div> --}}
+                        </div>
+                    </div> 
+                {{/each}}
+                </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <span style="font-size: 25px; text-align: center; margin-left: 20%; font-style: italic">Similar Destinations</span>
+                {{#each destinationSimilar}}
+                    <div class="img-temp" style="display: none;">{{this.image}}</div>
+                    <div class="card mb-4">
+                        <div class="img-scale">
+                        <a href="/destinations/{{this._id}}" style="text-decoration: none;">
+                            <img class="card-img-top scale-similar img-new" src="{{this.image}}" alt="{{this.name}}" style="height: 300px;">
                         </a>
                         </div>
                         <div class="card-body">
@@ -359,6 +402,34 @@
 </form>
 
 <script>
+    var s = document.getElementById("number-image").innerHTML
+    //s = s.replace(/\\/g, "/")
+    var arr = s.split(",")
+    var imgNumber
+    
+    for(var i = 0; i < arr.length; i++){
+        imgNumber = document.createElement("img")
+        imgNumber.src = arr[i]
+        imgNumber.className = "mySlidesDes"
+        imgNumber.style = 'style="width: 488px; height: 350px;"'
+        document.getElementById("image-list").appendChild(imgNumber)
+    }
+
+    var s = document.querySelectorAll(".img-temp")
+    var numberCard = document.querySelectorAll(".img-new")
+    for(var i = 0; i < numberCard.length; i++){
+       var s_new = s[i].innerHTML
+       for(var j = 0; j < s_new.length; j++)
+            if(s_new[j] == ","){
+                s_new = s_new.slice(0, j)
+                console.log(s_new)
+                break
+            }
+       //s_new = s_new.replace(/\\/g, '/')
+       //s_new = s_new.slice(10)
+       numberCard[i].setAttribute("src", s_new)
+    }
+
     document.addEventListener("DOMContentLoaded", function(){
         var id, id1;
         var modifyTag = document.querySelectorAll(".modify")
@@ -459,5 +530,24 @@
             if(tag[i].innerHTML == "NaN")
                 tag[i].innerHTML = "-"
         })
+        
+
+        var slideIndexDes = 1
+        showDivsDes(slideIndexDes)
+
+        function plusDivsDes(n) {
+            showDivsDes(slideIndexDes += n)
+        }
+
+        function showDivsDes(n) {
+        var i;
+        var x = document.getElementsByClassName("mySlidesDes");
+        if (n > x.length) {slideIndexDes = 1}
+        if (n < 1) {slideIndexDes = x.length}
+        for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";  
+        }
+        x[slideIndexDes-1].style.display = "inline-block";  
+    }
     
 </script>

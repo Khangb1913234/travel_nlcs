@@ -8,16 +8,34 @@ const Type = require("../models/type.model")
 const Service = require("../models/service.model")
 const jwt = require("jsonwebtoken")
 const PAGE_SIZE = 6
+const XLSX = require("xlsx")
 
 exports.create = function(req, res, next){
-    var title = req.body.title
-    var content = req.body.content
-    var price = req.body.price
-    price = price.replace(".", "").trim()
-    price = Number(price)
-    var time = req.body.time
-    var contact = req.body.contact
-    var image = req.body.image
+    var title, content, price, time, contact, image
+    if(req.body.title)
+        title = req.body.title
+    if(req.body.content)
+        content = req.body.content
+    if(req.body.price){
+        price = req.body.price
+        price = price.replace(".", "").trim()
+        price = Number(price)
+    }
+    if(req.body.time)
+        time = req.body.time
+    if(req.body.contact)
+        contact = req.body.contact
+    if(req.files){
+        let path = ''
+        req.files.forEach(function(files, index, arr){
+            s = files.path
+            s = s.slice(10)
+            path = path + s + ','
+            path = path.replace(/\\/g, "/")
+        })
+        path = path.substring(0, path.lastIndexOf(","))
+        image = path
+    }
     var token = req.cookies.token
     if(req.body.destinations)
         for(i = 0; i < req.body.destinations.length; i++)
@@ -28,24 +46,73 @@ exports.create = function(req, res, next){
             .then(function(account){
                 account = account.toObject()
                 if(account.role == "ctv2"){
-                    Tour.create({title: title, content: content, price: price, time: time, contact: contact, image: image, creator: account.username, destinations: req.body.destinations})
-                        .then(function(tour){
-                            if(req.body.destinations){
-                                for(var i = 0; i < req.body.destinations.length; i++){
-                                    Destination.findOneAndUpdate({_id: req.body.destinations[i]}, {$push: {tourId: tour._id}}, {new: true})
-                                        .then(function(){
-                                            next()
-                                        })
-                                        .catch(function(err){
-                                            console.log(err)
-                                        })
+                    if(req.body.excel == "yes"){
+                        var path = req.file.path
+                        var workbook = XLSX.readFile(path)
+                        let worksheet = workbook.Sheets[workbook.SheetNames[0]]
+                        var titleCol = []
+                        var contentCol = []
+                        var timeCol = []
+                        var priceCol = []
+                        var contactCol = []
+                        for(let cell in worksheet){
+                            const cellAsString = cell.toString()
+                            if(cellAsString[1] !== "r" && cellAsString !== "m" && cellAsString[1] > 1){
+                                if(cellAsString[0] == "A"){
+                                    const title = worksheet[cell].v
+                                    titleCol.push({title: title})
+                                }
+                                else if(cellAsString[0] == "B"){
+                                    const content = worksheet[cell].v
+                                    contentCol.push({content: content})
+                                }
+                                else if(cellAsString[0] == "C"){
+                                    const time = worksheet[cell].v
+                                    timeCol.push({time: time})
+                                }
+                                else if(cellAsString[0] == "D"){
+                                    const price = worksheet[cell].v
+                                    priceCol.push({price: price})
+                                }
+                                else if(cellAsString[0] == "E"){
+                                    const contact = worksheet[cell].v.toString()
+                                    contactCol.push({contact: contact})
                                 }
                             }
-                            res.redirect(`/me/stored/tours/${account.username}`)
-                        })
-                        .catch(function(err){
-                            console.log(err)
-                        })
+                        }
+                        for(var i = 0; i < titleCol.length; i++){
+                            titleCol[i] = Object.assign(titleCol[i], contentCol[i])
+                            titleCol[i] = Object.assign(titleCol[i], timeCol[i])
+                            titleCol[i] = Object.assign(titleCol[i], priceCol[i])
+                            titleCol[i] = Object.assign(titleCol[i], contactCol[i])
+                            titleCol[i] = Object.assign(titleCol[i], {creator: account.username})
+                        }
+                        Tour.insertMany(titleCol)
+                            .then(function(){
+                                res.redirect(`/me/stored/tours/${account.username}`)
+                            })
+                            .catch(next)
+                    }
+                    else{
+                        Tour.create({title: title, content: content, price: price, time: time, contact: contact, image: image, creator: account.username, destinations: req.body.destinations})
+                            .then(function(tour){
+                                if(req.body.destinations){
+                                    for(var i = 0; i < req.body.destinations.length; i++){
+                                        Destination.findOneAndUpdate({_id: req.body.destinations[i]}, {$push: {tourId: tour._id}}, {new: true})
+                                            .then(function(){
+                                                next()
+                                            })
+                                            .catch(function(err){
+                                                console.log(err)
+                                            })
+                                    }
+                                }
+                                res.redirect(`/me/stored/tours/${account.username}`)
+                            })
+                            .catch(function(err){
+                                console.log(err)
+                            })
+                    }
                 }
                 else{
                     res.redirect("back")
@@ -409,21 +476,43 @@ exports.edit = function(req, res, next){
 exports.update = function(req, res, next){
 	const id = req.params.id
     var token = req.cookies.token
-    var title = req.body.title
-    var content = req.body.content
-    var price = req.body.price
-    price = price.replace(".", "")
-    price = Number(price)
-    var time = req.body.time
-    var contact = req.body.contact
-    var image = req.body.image
+    var title, content, price, time, contact, image
+    if(req.body.title)
+        title = req.body.title
+    if(req.body.content)
+        content = req.body.content
+    if(req.body.price){
+        price = req.body.price
+        price = price.replace(".", "").trim()
+        price = Number(price)
+    }
+    if(req.body.time)
+        time = req.body.time
+    if(req.body.contact)
+        contact = req.body.contact
+    if(req.files){
+        let path = ''
+        req.files.forEach(function(files, index, arr){
+            s = files.path
+            s = s.slice(10)
+            path = path + s + ','
+            path = path.replace(/\\/g, "/")
+        })
+        path = path.substring(0, path.lastIndexOf(","))
+        image = path
+    }
     if(token){
         var decode = jwt.verify(token, "krystal")
         Account.findById(decode.id)
             .then(function(account){
                 account = account.toObject()
                 if(account.role == "ctv2"){
-                    Tour.findOneAndUpdate({_id: id}, {title: title, content: content, price: price, time: time, contact: contact, image: image, creator: account.username, destinations: req.body.destinations}, { new: true} )
+                    var updateQuery
+                    if(req.files.length != 0)
+                        updateQuery = Tour.findOneAndUpdate({_id: id}, {title: title, content: content, price: price, time: time, contact: contact, image: image, creator: account.username, destinations: req.body.destinations}, { new: true} )
+                    else
+                        updateQuery = Tour.findOneAndUpdate({_id: id}, {title: title, content: content, price: price, time: time, contact: contact, creator: account.username, destinations: req.body.destinations})
+                    updateQuery
                         .then(function(){
                             next()
                         })

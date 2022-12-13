@@ -35,9 +35,10 @@
     <div class="row mt-4">
         {{#each destinations}}
         <div class="col-sm-6 col-lg-4">
-            <div class="card">
+            <div class="card">       
                 <a href="/destinations/{{this._id}}" style="text-decoration: none;">
-                    <img class="card-img-top" src="{{this.image}}" alt="{{this.name}}" style="height: 300px;">
+                    <div class="img-temp" style="display:none">{{this.image}}</div>
+                    <img class="card-img-top img-new" src="{{this.image}}" alt="{{this.name}}" style="height: 300px;">
                 </a>
                 <div class="card-body">
                     <a href="/destinations/{{this._id}}" style="text-decoration: none;">
@@ -55,6 +56,20 @@
 
 
 <script>
+    var s = document.querySelectorAll(".img-temp")
+    var numberCard = document.querySelectorAll(".img-new")
+    for(var i = 0; i < numberCard.length; i++){
+       var s_new = s[i].innerHTML
+       for(var j = 0; j < s_new.length; j++)
+            if(s_new[j] == ","){
+                s_new = s_new.slice(0, j)
+                console.log(s_new)
+                break
+            }
+       //s_new = s_new.replace(/\\/g, '/')
+       //s_new = s_new.slice(10)
+       numberCard[i].setAttribute("src", s_new)
+    }
     document.addEventListener("DOMContentLoaded", function(){
         var keyword
         var formSearch = document.forms["form-search"]

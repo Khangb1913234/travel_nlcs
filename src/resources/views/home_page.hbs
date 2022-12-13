@@ -1,5 +1,5 @@
 <style>
-    .mySlides3 {display:none; width:100%; height: 700px;}
+    .mySlides3 {display:none; width:100%; height: 400px;}
     .display-container{position:relative}
 
     /*---Css Nút qua lại---*/
@@ -52,8 +52,9 @@
 <div class="mt-4 mb-4 slideshow" style="text-align: center !important;"><span class="mb-4" style="font-size: 25px;color: orange; font-weight: bold;">Famous Destination</span>
     <div class="display-container">
         {{#each famousDes}}
+        <div class="img-temp" style="display: none;">{{this.image}}</div>
         <a href="/destinations/{{this._id}}">
-            <img class="mySlidesDes" src="{{this.image}}">
+            <img class="mySlidesDes img-new" src="{{this.image}}">
         </a>
         {{/each}}
 
@@ -105,6 +106,21 @@
             x[i].style.display = "none";  
         }
         x[slideIndexDes-1].style.display = "inline-block";  
+    }
+
+    var s = document.querySelectorAll(".img-temp")
+    var numberCard = document.querySelectorAll(".img-new")
+    for(var i = 0; i < numberCard.length; i++){
+       var s_new = s[i].innerHTML
+       for(var j = 0; j < s_new.length; j++)
+            if(s_new[j] == ","){
+                s_new = s_new.slice(0, j)
+                console.log(s_new)
+                break
+            }
+       //s_new = s_new.replace(/\\/g, '/')
+       //s_new = s_new.slice(10)
+       numberCard[i].setAttribute("src", s_new)
     }
 
     document.querySelector(".man").setAttribute("class", "man")

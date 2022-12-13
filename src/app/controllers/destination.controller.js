@@ -9,6 +9,7 @@ const Type = require("../models/type.model")
 const Service = require("../models/service.model")
 const jwt = require("jsonwebtoken")
 const PAGE_SIZE = 6
+const XLSX = require("xlsx")
 
 // exports.create = function(req, res, next){
 //     // var district = req.body.district
@@ -40,14 +41,35 @@ const PAGE_SIZE = 6
 //         .catch(next)
 
 exports.create = function(req, res, next){
-    var name = req.body.name
-    var content = req.body.content
-    var address = req.body.address
-    var time = req.body.operatingTime
-    var price = req.body.price
-    var capacity = req.body.capacity
-    var contact = req.body.contact
-    var image = req.body.image
+    console.log("abc")
+    var name, content, address, time, price, capacity, contact, map, image
+    if(req.body.name)
+        name = req.body.name
+    if(req.body.content)
+        content = req.body.content
+    if(req.body.address)
+        address = req.body.address
+    if(req.body.operatingTime)
+        time = req.body.operatingTime
+    if(req.body.price)
+        var price = req.body.price
+    if(req.body.capacity)
+        capacity = req.body.capacity
+    if(req.body.contact)
+        contact = req.body.contact
+    if(req.body.map)
+        map = req.body.map
+    if(req.files){
+        let path = ''
+        req.files.forEach(function(files, index, arr){
+            var s = files.path
+            s = s.slice(10)
+            path = path + s + ','
+            path = path.replace(/\\/g, "/")
+        })
+        path = path.substring(0, path.lastIndexOf(","))
+        image = path
+    }
     var districtId = req.body.district
     var wardCode = req.body.ward
     var token = req.cookies.token
@@ -64,34 +86,102 @@ exports.create = function(req, res, next){
             .then(function(account){
                 account = account.toObject()
                 if(account.role == "ctv1"){
-                    Destination.create({name: name, content: content, address: address, operatingTime: time, price: price, capacity: capacity, contact: contact, image: image, districtId: districtId, wardCode: wardCode, creator: account.username, types: req.body.types, services: req.body.services})
-                        .then(function(destination){
-                            if(req.body.types){
-                                for(i = 0; i < req.body.types.length; i++){
-                                    Type.findOneAndUpdate({_id: req.body.types[i]}, {$push: {destinations: destination._id}}, {new: true})
-                                        .then(function(){
-                                            next()
-                                        })
-                                        .catch(function(err){
-                                            console.log(err)
-                                        })
+                    if(req.body.excel == "yes"){
+                        var path = req.file.path
+                        var workbook = XLSX.readFile(path)
+                        let worksheet = workbook.Sheets[workbook.SheetNames[0]]
+                        var nameCol = []
+                        var contentCol = []
+                        var addressCol = []
+                        var timeCol = []
+                        var priceCol = []
+                        var capacityCol = []
+                        var contactCol = []
+                        var mapCol = []
+                        for(let cell in worksheet){
+                            const cellAsString = cell.toString()
+                            if(cellAsString[1] !== "r" && cellAsString !== "m" && cellAsString[1] > 1){
+                                if(cellAsString[0] == "A"){
+                                    const name = worksheet[cell].v
+                                    nameCol.push({name: name})
+                                }
+                                else if(cellAsString[0] == "B"){
+                                    const content = worksheet[cell].v
+                                    contentCol.push({content: content})
+                                }
+                                else if(cellAsString[0] == "C"){
+                                    const address = worksheet[cell].v
+                                    addressCol.push({address: address})
+                                }
+                                else if(cellAsString[0] == "D"){
+                                    const operatingTime = worksheet[cell].v
+                                    timeCol.push({operatingTime: operatingTime})
+                                }
+                                else if(cellAsString[0] == "E"){
+                                    const price = worksheet[cell].v.toString()
+                                    priceCol.push({price: price})
+                                }
+                                else if(cellAsString[0] == "F"){
+                                    const capacity = worksheet[cell].v.toString()
+                                    capacityCol.push({capacity: capacity})
+                                }
+                                else if(cellAsString[0] == "G"){
+                                    const contact = worksheet[cell].v
+                                    contactCol.push({contact: contact})
+                                }
+                                else if(cellAsString[0] == "H"){
+                                    const map = worksheet[cell].v
+                                    mapCol.push({map: map})
                                 }
                             }
-                            if(req.body.services){              
-                                for(i = 0; i < req.body.services.length; i++){                                   
-                                    Service.findOneAndUpdate({_id: req.body.services[i]}, {$push: {destinations: destination._id}}, {new: true})
-                                        .then(function(){
-                                            next()
-                                        })
-                                        .catch(function(err){
-                                            console.log(err)
-                                        })
+                        }
+                        for(var i = 0; i < nameCol.length; i++){
+                            nameCol[i] = Object.assign(nameCol[i], contentCol[i])
+                            nameCol[i] = Object.assign(nameCol[i], addressCol[i])
+                            nameCol[i] = Object.assign(nameCol[i], timeCol[i])
+                            nameCol[i] = Object.assign(nameCol[i], priceCol[i])
+                            nameCol[i] = Object.assign(nameCol[i], capacityCol[i])
+                            nameCol[i] = Object.assign(nameCol[i], contactCol[i])
+                            nameCol[i] = Object.assign(nameCol[i], mapCol[i])
+                            nameCol[i] = Object.assign(nameCol[i], {creator: account.username})
+                        }
+                        Destination.insertMany(nameCol)
+                            .then(function(){
+                                res.redirect(`/me/stored/destinations/${account.username}`)
+                            })
+                            .catch(next)
+                    }
+                    else{
+                        Destination.create({name: name, content: content, address: address, operatingTime: time, price: price, capacity: capacity, contact: contact, map: map, image: image, districtId: districtId, wardCode: wardCode, creator: account.username, types: req.body.types, services: req.body.services})
+                            .then(function(destination){
+                                if(req.body.types){
+                                    for(i = 0; i < req.body.types.length; i++){
+                                        Type.findOneAndUpdate({_id: req.body.types[i]}, {$push: {destinations: destination._id}}, {new: true})
+                                            .then(function(){
+                                                next()
+                                            })
+                                            .catch(function(err){
+                                                console.log(err)
+                                            })
+                                    }
                                 }
-                            }
-                            res.redirect(`/me/stored/destinations/${account.username}`)
-                            //res.json(destination)
-                        })
-                        .catch(next)
+                                if(req.body.services){              
+                                    for(i = 0; i < req.body.services.length; i++){                                   
+                                        Service.findOneAndUpdate({_id: req.body.services[i]}, {$push: {destinations: destination._id}}, {new: true})
+                                            .then(function(){
+                                                next()
+                                            })
+                                            .catch(function(err){
+                                                console.log(err)
+                                            })
+                                    }
+                                }
+                                res.redirect(`/me/stored/destinations/${account.username}`)
+                                //res.json(destination)
+                            })
+                            .catch(next)
+                    }
+                    
                 }
                 else{
                     res.redirect("back")
@@ -333,7 +423,7 @@ exports.findAll = function(req, res, next){
 exports.findOne = function(req, res, next){
     var a = []
     const {id} = req.params
-    var random = Math.floor(Math.random() * 4);
+    var random = Math.floor(Math.random() * 3);
     Destination.findOne({_id: id})
         .then(function(destinations){
             destinations = destinations.toObject()
@@ -346,88 +436,100 @@ exports.findOne = function(req, res, next){
                     for(i = 0; i < approvals.length; i++)
                         if(approvals[i].destinationId)
                             a[j++] = approvals[i].destinationId
-                    Destination.find({$or: [{types: {$in: destinations.types}}], _id: {$ne: destinations._id, $in: a}})
+                    Destination.find({$or: [{types: {$in: destinations.types}}, {wardCode: destinations.wardCode}], _id: {$ne: destinations._id, $in: a}})
                         .skip(random)
                         .limit(5)
                         .then(function(destinationSimilar){
                             destinationSimilar = destinationSimilar.map(function(destinationSimilar){
                                 return destinationSimilar.toObject()
                             })
-                            var check = 0
-                            for(i = 0; i < approvals.length; i++)
-                                if(approvals[i].destinationId)
-                                    if(destinations._id.toString() == approvals[i].destinationId.toString()){
-                                        check = 1
-                                        break
-                                    }
-                            if(check == 1){
-                                Rating.find({destinationId: destinations._id})
-                                    .sort({'createdAt': 'desc'})
-                                    .then(function(rating){
-                                        rating = rating.map(function(rating){
-                                            return rating.toObject()
-                                        })               
-                                        var point = 0, count = 0
-                                        for(var i of rating){
-                                            point += i.rate
-                                            count++
-                                        }
-                                        
-                                        point = (point / count).toFixed(1)
-                                        var rate = {
-                                            point: point,
-                                            count: count
-                                        }
-                                        Type.find({_id: {$in: destinations.types}})
-                                            .then(function(types){
-                                                types = types.map(function(types){
-                                                    return types.toObject()
-                                                })
-                                                Service.find({_id: {$in: destinations.services}})
-                                                    .then(function(services){
-                                                        services = services.map(function(services){
-                                                            return services. toObject()
+                            Destination.find({wardCode: destinations.wardCode, _id: {$ne: destinations._id, $in: a}})
+                                .limit(5)
+                                .then(function(destinationNearby){
+                                    destinationNearby = destinationNearby.map(function(destinationNearby){
+                                        return destinationNearby.toObject()
+                                    })
+                                    var check = 0
+                                    for(i = 0; i < approvals.length; i++)
+                                        if(approvals[i].destinationId)
+                                            if(destinations._id.toString() == approvals[i].destinationId.toString()){
+                                                check = 1
+                                                break
+                                            }
+                                    if(check == 1){
+                                        Rating.find({destinationId: destinations._id})
+                                            .sort({'createdAt': 'desc'})
+                                            .then(function(rating){
+                                                rating = rating.map(function(rating){
+                                                    return rating.toObject()
+                                                })               
+                                                var point = 0, count = 0
+                                                for(var i of rating){
+                                                    point += i.rate
+                                                    count++
+                                                }
+                                                
+                                                point = (point / count).toFixed(1)
+                                                var rate = {
+                                                    point: point,
+                                                    count: count
+                                                }
+                                                Type.find({_id: {$in: destinations.types}})
+                                                    .then(function(types){
+                                                        types = types.map(function(types){
+                                                            return types.toObject()
                                                         })
-                                                        Tour.find({_id: {$in: destinations.tourId}})
-                                                            .then(function(tours){
-                                                                tours = tours.map(function(tours){
-                                                                    return tours.toObject()
+                                                        Service.find({_id: {$in: destinations.services}})
+                                                            .then(function(services){
+                                                                services = services.map(function(services){
+                                                                    return services. toObject()
                                                                 })
-                                                                var token = req.cookies.token
-                                                                if(token){
-                                                                    var decode = jwt.verify(token, "krystal")
-                                                                    Account.findById(decode.id)
-                                                                        .then(function(account){
-                                                                            account = account.toObject()
+                                                                Tour.find({_id: {$in: destinations.tourId}})
+                                                                    .then(function(tours){
+                                                                        tours = tours.map(function(tours){
+                                                                            return tours.toObject()
+                                                                        })
+                                                                        var token = req.cookies.token
+                                                                        if(token){
+                                                                            var decode = jwt.verify(token, "krystal")
+                                                                            Account.findById(decode.id)
+                                                                                .then(function(account){
+                                                                                    account = account.toObject()
+                                                                                    res.render("destinations/destination", {
+                                                                                        destinations: destinations,
+                                                                                        account: account,
+                                                                                        rating: rating,
+                                                                                        rate: rate,
+                                                                                        types: types,
+                                                                                        services: services,
+                                                                                        tours: tours,
+                                                                                        destinationSimilar: destinationSimilar,
+                                                                                        destinationNearby: destinationNearby
+                                                                                    })
+                                                                                    // res.json(rate)
+                                                                        
+                                                                                })
+                                                                                .catch(function(err){
+                                                                                    console.log(err)
+                                                                                })
+                                                                        }
+                                                                        else{
                                                                             res.render("destinations/destination", {
                                                                                 destinations: destinations,
-                                                                                account: account,
                                                                                 rating: rating,
                                                                                 rate: rate,
                                                                                 types: types,
                                                                                 services: services,
                                                                                 tours: tours,
-                                                                                destinationSimilar: destinationSimilar
+                                                                                destinationSimilar: destinationSimilar,
+                                                                                destinationNearby: destinationNearby
                                                                             })
                                                                             // res.json(rate)
-                                                                
-                                                                        })
-                                                                        .catch(function(err){
-                                                                            console.log(err)
-                                                                        })
-                                                                }
-                                                                else{
-                                                                    res.render("destinations/destination", {
-                                                                        destinations: destinations,
-                                                                        rating: rating,
-                                                                        rate: rate,
-                                                                        types: types,
-                                                                        services: services,
-                                                                        tours: tours,
-                                                                        destinationSimilar: destinationSimilar
+                                                                        }
                                                                     })
-                                                                    // res.json(rate)
-                                                                }
+                                                                    .catch(function(err){
+                                                                        console.log(err)
+                                                                    })
                                                             })
                                                             .catch(function(err){
                                                                 console.log(err)
@@ -440,14 +542,14 @@ exports.findOne = function(req, res, next){
                                             .catch(function(err){
                                                 console.log(err)
                                             })
-                                    })
-                                    .catch(function(err){
-                                        console.log(err)
-                                    })
-                            }
-                            else{
-                                res.redirect("back")            //reder notfound page
-                            }
+                                    }
+                                    else{
+                                        res.redirect("back")            //reder notfound page
+                                    }
+                                })
+                                .catch(function(err){
+                                    console.log(err)
+                                })
                         })
                         .catch(function(err){
                             console.log(err)
@@ -704,14 +806,57 @@ exports.edit = function(req, res, next){
 
 exports.update = function(req, res, next){
 	const id = req.params.id
+    var name, content, address, time, price, capacity, contact, map, image
+    if(req.body.name)
+        name = req.body.name
+    if(req.body.content)
+        content = req.body.content
+    if(req.body.address)
+        address = req.body.address
+    if(req.body.operatingTime)
+        time = req.body.operatingTime
+    if(req.body.price)
+        var price = req.body.price
+    if(req.body.capacity)
+        capacity = req.body.capacity
+    if(req.body.contact)
+        contact = req.body.contact
+    if(req.body.contact)
+        map = req.body.map
+    if(req.files){
+        let path = ''
+        req.files.forEach(function(files, index, arr){
+            var s = files.path
+            s = s.slice(10)
+            path = path + s + ','
+            path = path.replace(/\\/g, "/")
+        })
+        path = path.substring(0, path.lastIndexOf(","))
+        image = path
+    }
+    var districtId = req.body.districtId
+    var wardCode = req.body.wardCode
     var token = req.cookies.token
+    console.log(districtId)
+    var i = 0
+    if(req.body.types)
+        for(i = 0; i < req.body.types.length; i++)
+            req.body.types[i] = mongoose.Types.ObjectId(req.body.types[i])
+    if(req.body.services)
+        for(i = 0; i < req.body.services.length; i++)
+            req.body.services[i] = mongoose.Types.ObjectId(req.body.services[i])
     if(token){
         var decode = jwt.verify(token, "krystal")
         Account.findById(decode.id)
             .then(function(account){
                 account = account.toObject()
                 if(account.role == "ctv1"){
-                    Destination.findOneAndUpdate({_id: id}, req.body, { new: true} )
+                    var updateQuery
+                    if(req.files.length != 0)
+                        updateQuery = Destination.findOneAndUpdate({_id: id}, {name: name, content: content, address: address, operatingTime: time, price: price, capacity: capacity, contact: contact, map: map, image: image, districtId: districtId, wardCode: wardCode, creator: account.username, types: req.body.types, services: req.body.services}, { new: true} )
+                    else
+                        updateQuery = Destination.findOneAndUpdate({_id: id}, {name: name, content: content, address: address, operatingTime: time, price: price, capacity: capacity, contact: contact, map: map, districtId: districtId, wardCode: wardCode, creator: account.username, types: req.body.types, services: req.body.services}, {new: true})
+                    updateQuery
                         .then(function(){
                             next()
                         })
@@ -732,18 +877,20 @@ exports.update = function(req, res, next){
                                     
                                 }
                             }
-                            Type.find({_id: {$nin: req.body.types}})
-                                .then(function(types){
-                                    for(var i = 0; i < types.length; i++){
-                                        Type.findOneAndUpdate({_id: types[i]._id}, {$pull: {destinations: destination._id}}, {new: true})
-                                            .then(function(){
-                                                next()
-                                            })
-                                            .catch(function(err){
-                                                console.log(err)
-                                            })
-                                    }
-                                })
+                            if(req.body.types){
+                                Type.find({_id: {$nin: req.body.types}})
+                                    .then(function(types){
+                                        for(var i = 0; i < types.length; i++){
+                                            Type.findOneAndUpdate({_id: types[i]._id}, {$pull: {destinations: destination._id}}, {new: true})
+                                                .then(function(){
+                                                    next()
+                                                })
+                                                .catch(function(err){
+                                                    console.log(err)
+                                                })
+                                        }
+                                    })
+                            }
                             if(req.body.services){
                                 for(var i = 0; i < req.body.services.length; i++){
                                     Service.findOneAndUpdate({_id: req.body.services[i], destinations: {$ne: destination._id}}, {$push: {destinations: destination._id}}, {new: true})
@@ -755,21 +902,23 @@ exports.update = function(req, res, next){
                                         })
                                 }
                             }
-                            Service.find({_id: {$nin: req.body.services}})
-                                .then(function(services){
-                                    for(var i = 0; i < services.length; i++){
-                                        Service.findOneAndUpdate({_id: services[i]._id}, {$pull: {destinations: destination._id}}, {new: true})
-                                            .then(function(){
-                                                next()
-                                            })
-                                            .catch(function(err){
-                                                console.log(err)
-                                            })
-                                    }
-                                })
-                                .catch(function(err){
-                                    console.log(err)
-                                })
+                            if(req.body.services){
+                                Service.find({_id: {$nin: req.body.services}})
+                                    .then(function(services){
+                                        for(var i = 0; i < services.length; i++){
+                                            Service.findOneAndUpdate({_id: services[i]._id}, {$pull: {destinations: destination._id}}, {new: true})
+                                                .then(function(){
+                                                    next()
+                                                })
+                                                .catch(function(err){
+                                                    console.log(err)
+                                                })
+                                        }
+                                    })
+                                    .catch(function(err){
+                                        console.log(err)
+                                    })
+                            }
                             res.redirect(`/me/stored/destinations/${account.username}`)                  
                         })     
                         .catch(function(err){
