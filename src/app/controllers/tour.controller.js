@@ -359,7 +359,6 @@ exports.findOne = function(req, res, next){
                                             res.render("tour/tour", {
                                                 tour: tour,
                                                 destinations: destinations,
-                                                tourSimilar: tourSimilar
                                             })
                                             // res.json(rate)
                                         }

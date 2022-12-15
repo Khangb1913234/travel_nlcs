@@ -58,6 +58,7 @@
     </div>
 
     <div class="mt-4" style="font-size: 25px; text-align: center; font-style: italic">Similar Tours</div>
+    <div id="check-role-tour" class="mt-4" style="display: none">(Please login to view)</div>
     <div class="row">
     {{#each tourSimilar}}
         <div class="col-6">
@@ -151,5 +152,10 @@
             x[i].style.display = "none";  
         }
         x[slideIndexDes-1].style.display = "inline-block";  
-}
+    }
+
+    if(acc.innerHTML == ""){
+        console.log("acc")
+        document.getElementById("check-role-tour").style = "font-size: 25px; text-align: center; font-style: italic"
+    }
 </script>

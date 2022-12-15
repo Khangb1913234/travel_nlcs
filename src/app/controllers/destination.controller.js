@@ -521,8 +521,7 @@ exports.findOne = function(req, res, next){
                                                                                 types: types,
                                                                                 services: services,
                                                                                 tours: tours,
-                                                                                destinationSimilar: destinationSimilar,
-                                                                                destinationNearby: destinationNearby
+                                                                                
                                                                             })
                                                                             // res.json(rate)
                                                                         }
